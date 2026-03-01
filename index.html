@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🕸️ KONOMI — Charlotte's Web 🕸️</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --purple-deep: #0d0a1a;
+      --purple-dark: #1a1033;
+      --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0;
+      --purple-glow: #9b59b6;
+      --purple-bright: #c084fc;
+      --gold: #d4a574;
+      --gold-light: #f0d9b5;
+      --silver: #c0c0c0;
+      --web-line: rgba(192, 132, 252, 0.15);
+      --text: #e8dff5;
+      --text-dim: #9b8bb4;
+    }
+
+    body {
+      background: var(--purple-deep);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Spider Web Background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(107, 63, 160, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(155, 89, 182, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(45, 27, 105, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Web SVG overlay ── */
+    .web-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.06;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      padding: 40px 20px 30px;
+      position: relative;
+    }
+
+    .header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.4em;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--purple-bright), var(--gold-light), var(--purple-bright));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+      text-shadow: none;
+    }
+
+    .subtitle {
+      font-size: 1.1em;
+      color: var(--text-dim);
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    .subtitle .glass-mozart {
+      font-size: 0.85em;
+      color: var(--gold);
+      display: block;
+      margin-top: 6px;
+      letter-spacing: 2px;
+    }
+
+    /* ── Web decoration lines ── */
+    .web-decoration {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 15px 0;
+      gap: 10px;
+      color: var(--purple-light);
+      font-size: 0.9em;
+      letter-spacing: 4px;
+    }
+
+    .web-decoration::before,
+    .web-decoration::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--purple-light), transparent);
+    }
+
+    /* ── System Status ── */
+    .system-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(45, 27, 105, 0.4);
+      border: 1px solid rgba(155, 89, 182, 0.2);
+      border-radius: 20px;
+      padding: 6px 16px;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--purple-glow);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.4; box-shadow: 0 0 4px var(--purple-glow); }
+      50% { opacity: 1; box-shadow: 0 0 12px var(--purple-glow); }
+    }
+
+    /* ── Player Section ── */
+    .player-section {
+      margin: 25px 0;
+    }
+
+    .player-container {
+      background: linear-gradient(145deg, rgba(26, 16, 51, 0.9), rgba(13, 10, 26, 0.95));
+      border: 1px solid rgba(155, 89, 182, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 0 40px rgba(107, 63, 160, 0.1),
+        inset 0 1px 0 rgba(192, 132, 252, 0.05);
+    }
+
+    .media-display {
+      position: relative;
+      background: #0a0715;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .media-display video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .now-playing {
+      position: absolute;
+      bottom: 0;
+      left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 20px;
+      background: linear-gradient(transparent, rgba(13, 10, 26, 0.95));
+    }
+
+    .track-art {
+      font-size: 2em;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(107, 63, 160, 0.3);
+      border-radius: 8px;
+      border: 1px solid rgba(155, 89, 182, 0.3);
+    }
+
+    .track-info h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2em;
+      color: var(--purple-bright);
+    }
+
+    .track-info p {
+      font-size: 0.9em;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ── Controls ── */
+    .controls {
+      padding: 20px;
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      font-size: 0.85em;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-bar {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(107, 63, 160, 0.3);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .progress-bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--purple-bright);
+      box-shadow: 0 0 8px rgba(192, 132, 252, 0.5);
+      cursor: pointer;
+    }
+
+    .progress-bar::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--purple-bright);
+      box-shadow: 0 0 8px rgba(192, 132, 252, 0.5);
+      border: none;
+      cursor: pointer;
+    }
+
+    .control-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .ctrl-btn {
+      background: rgba(45, 27, 105, 0.4);
+      border: 1px solid rgba(155, 89, 182, 0.25);
+      color: var(--text);
+      font-size: 1.3em;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ctrl-btn:hover {
+      background: rgba(107, 63, 160, 0.5);
+      border-color: var(--purple-glow);
+      box-shadow: 0 0 15px rgba(155, 89, 182, 0.3);
+      transform: scale(1.05);
+    }
+
+    .play-btn {
+      width: 60px;
+      height: 60px;
+      font-size: 1.6em;
+      background: linear-gradient(135deg, var(--purple-mid), var(--purple-light));
+      border-color: var(--purple-glow);
+    }
+
+    .play-btn:hover {
+      background: linear-gradient(135deg, var(--purple-light), var(--purple-glow));
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 10px;
+      font-size: 0.9em;
+    }
+
+    .volume-bar {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 80px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(107, 63, 160, 0.3);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+    }
+
+    .volume-bar::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ── Set Player Panel ── */
+    .set-panel {
+      margin: 25px 0;
+      background: linear-gradient(145deg, rgba(26, 16, 51, 0.8), rgba(13, 10, 26, 0.9));
+      border: 1px solid rgba(212, 165, 116, 0.2);
+      border-radius: 16px;
+      padding: 25px;
+    }
+
+    .set-panel h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3em;
+      color: var(--gold);
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .set-description {
+      text-align: center;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 20px;
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    .set-tracks {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .set-track {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(45, 27, 105, 0.3);
+      border: 1px solid rgba(155, 89, 182, 0.15);
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .set-track.active {
+      background: rgba(107, 63, 160, 0.3);
+      border-color: var(--purple-glow);
+      box-shadow: 0 0 15px rgba(155, 89, 182, 0.15);
+    }
+
+    .set-track.completed {
+      opacity: 0.5;
+      border-color: rgba(155, 89, 182, 0.1);
+    }
+
+    .set-track-number {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4em;
+      font-weight: 700;
+      color: var(--gold);
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .set-track-info {
+      flex: 1;
+    }
+
+    .set-track-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05em;
+      color: var(--purple-bright);
+    }
+
+    .set-track-meta {
+      font-size: 0.8em;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .set-track-status {
+      font-size: 0.85em;
+      color: var(--text-dim);
+    }
+
+    .play-set-btn {
+      display: block;
+      margin: 0 auto;
+      padding: 14px 40px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.1em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--purple-mid), var(--purple-light));
+      border: 1px solid var(--purple-glow);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .play-set-btn:hover {
+      background: linear-gradient(135deg, var(--purple-light), var(--purple-glow));
+      box-shadow: 0 0 25px rgba(155, 89, 182, 0.4);
+      transform: scale(1.03);
+    }
+
+    .play-set-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .delay-note {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.8em;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ── KONOMI Panel ── */
+    .konomi-panel {
+      margin: 25px 0;
+      background: linear-gradient(145deg, rgba(26, 16, 51, 0.7), rgba(13, 10, 26, 0.8));
+      border: 1px solid rgba(155, 89, 182, 0.15);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .konomi-panel h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--purple-bright);
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+
+    .konomi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .konomi-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(45, 27, 105, 0.3);
+      border-radius: 8px;
+      border: 1px solid rgba(107, 63, 160, 0.15);
+    }
+
+    .konomi-stat .label {
+      font-size: 0.85em;
+      color: var(--text-dim);
+    }
+
+    .konomi-stat .value {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9em;
+      color: var(--purple-bright);
+    }
+
+    /* ── Playlist Section ── */
+    .playlist-section {
+      margin: 25px 0;
+    }
+
+    .playlist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .playlist-header h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1em;
+      color: var(--purple-bright);
+    }
+
+    .playlist {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(26, 16, 51, 0.6);
+      border: 1px solid rgba(107, 63, 160, 0.12);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .track-item:hover {
+      background: rgba(45, 27, 105, 0.4);
+      border-color: rgba(155, 89, 182, 0.3);
+    }
+
+    .track-item.active {
+      background: rgba(107, 63, 160, 0.25);
+      border-color: var(--purple-glow);
+      box-shadow: 0 0 10px rgba(155, 89, 182, 0.1);
+    }
+
+    .track-item-icon {
+      font-size: 1.3em;
+    }
+
+    .track-item-info {
+      flex: 1;
+    }
+
+    .track-item-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95em;
+      color: var(--text);
+    }
+
+    .track-item-artist {
+      font-size: 0.8em;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .track-item-duration {
+      font-size: 0.8em;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Composer Quotes ── */
+    .composer-quotes {
+      margin: 25px 0;
+      padding: 25px;
+      background: linear-gradient(145deg, rgba(26, 16, 51, 0.5), rgba(13, 10, 26, 0.6));
+      border: 1px solid rgba(212, 165, 116, 0.15);
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .composer-quotes h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1em;
+      color: var(--gold);
+      margin-bottom: 15px;
+      letter-spacing: 3px;
+    }
+
+    .quote {
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 1em;
+      line-height: 1.7;
+      margin-bottom: 12px;
+      padding: 0 20px;
+    }
+
+    .quote-attr {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8em;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .musical-notation {
+      margin: 20px 0;
+      font-size: 1.6em;
+      letter-spacing: 8px;
+      color: rgba(192, 132, 252, 0.3);
+      user-select: none;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-dim);
+      font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15);
+      margin-top: 30px;
+    }
+
+    .footer a {
+      color: var(--purple-bright);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .footer .charlotte-sig {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1em;
+      color: var(--gold);
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    /* ── Floating web strands animation ── */
+    .strand {
+      position: fixed;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(192, 132, 252, 0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
+      animation: strand-sway 8s ease-in-out infinite;
+    }
+
+    @keyframes strand-sway {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(5px) rotate(0.5deg); }
+      75% { transform: translateX(-5px) rotate(-0.5deg); }
+    }
+
+    /* ── Transition overlay ── */
+    .transition-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(13, 10, 26, 0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .transition-overlay.visible {
+      display: flex;
+    }
+
+    .transition-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4em;
+      color: var(--purple-bright);
+      letter-spacing: 3px;
+    }
+
+    .transition-countdown {
+      font-family: 'Cinzel', serif;
+      font-size: 3em;
+      color: var(--gold);
+      animation: pulse-count 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse-count {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.6em; }
+      .control-buttons { gap: 8px; }
+      .ctrl-btn { width: 42px; height: 42px; font-size: 1.1em; }
+      .play-btn { width: 52px; height: 52px; }
+      .volume-control { width: 100%; justify-content: center; margin: 8px 0 0 0; }
+      .konomi-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating web strands -->
+  <div class="strand" style="left: 10%; top: 0; height: 100vh; animation-delay: 0s;"></div>
+  <div class="strand" style="left: 25%; top: 0; height: 80vh; animation-delay: 1.5s;"></div>
+  <div class="strand" style="left: 50%; top: 0; height: 90vh; animation-delay: 3s;"></div>
+  <div class="strand" style="left: 75%; top: 0; height: 85vh; animation-delay: 0.8s;"></div>
+  <div class="strand" style="left: 90%; top: 0; height: 95vh; animation-delay: 2.2s;"></div>
+
+  <!-- Transition overlay for between-track delay -->
+  <div class="transition-overlay" id="transitionOverlay">
+    <div class="musical-notation">&#9834; &#9835; &#9833; &#9839; &#9834;</div>
+    <div class="transition-text" id="transitionText">Next movement approaching...</div>
+    <div class="transition-countdown" id="transitionCountdown">3</div>
+  </div>
+
+  <!-- Web SVG background -->
+  <svg class="web-overlay" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+    <g stroke="currentColor" fill="none" stroke-width="0.5" opacity="0.5">
+      <!-- Radial web lines -->
+      <line x1="400" y1="400" x2="400" y2="0"/>
+      <line x1="400" y1="400" x2="800" y2="0"/>
+      <line x1="400" y1="400" x2="800" y2="400"/>
+      <line x1="400" y1="400" x2="800" y2="800"/>
+      <line x1="400" y1="400" x2="400" y2="800"/>
+      <line x1="400" y1="400" x2="0" y2="800"/>
+      <line x1="400" y1="400" x2="0" y2="400"/>
+      <line x1="400" y1="400" x2="0" y2="0"/>
+      <!-- Spiral rings -->
+      <circle cx="400" cy="400" r="80"/>
+      <circle cx="400" cy="400" r="160"/>
+      <circle cx="400" cy="400" r="260"/>
+      <circle cx="400" cy="400" r="380"/>
+    </g>
+    <!-- SOME PIG text woven into web -->
+    <text x="400" y="405" text-anchor="middle" font-family="Cinzel, serif" font-size="28" fill="currentColor" opacity="0.12" letter-spacing="8">SOME PIG</text>
+    <text x="400" y="440" text-anchor="middle" font-family="Cinzel, serif" font-size="14" fill="currentColor" opacity="0.08" letter-spacing="4">TERRIFIC &middot; RADIANT &middot; HUMBLE</text>
+  </svg>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <h1>&#128376;&#65039; Charlotte's Web &#128376;&#65039;</h1>
+      <p class="subtitle">
+        KONOMI MOOSIC &mdash; Self-hosted, pure vibes, no BS
+        <span class="glass-mozart">&#9835; In the spirit of Glass &amp; Mozart &#9835;</span>
+      </p>
+      <div class="system-status" id="systemStatus">
+        <span class="status-dot"></span>
+        <span id="statusText">System Ready</span>
+      </div>
+    </header>
+
+    <div class="web-decoration">&#9830; &#9826; &#9830;</div>
+
+    <!-- Main Player -->
+    <section class="player-section">
+      <div class="player-container">
+        <div class="media-display" id="mediaDisplay">
+          <video id="videoPlayer" playsinline></video>
+          <div class="now-playing" id="nowPlaying">
+            <div class="track-art" id="trackArt">&#127925;</div>
+            <div class="track-info">
+              <h2 id="trackTitle">Charlotte's Web Set</h2>
+              <p id="trackArtist">teslasolar</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+          <div class="progress-container">
+            <span id="currentTime">0:00</span>
+            <input type="range" id="progressBar" class="progress-bar" value="0" min="0" max="100" step="0.1">
+            <span id="duration">0:00</span>
+          </div>
+          <div class="control-buttons">
+            <button id="prevBtn" class="ctrl-btn" title="Previous">&#9198;&#65039;</button>
+            <button id="playBtn" class="ctrl-btn play-btn" title="Play">&#9654;&#65039;</button>
+            <button id="nextBtn" class="ctrl-btn" title="Next">&#9197;&#65039;</button>
+            <div class="volume-control">
+              <span>&#128266;</span>
+              <input type="range" id="volumeBar" class="volume-bar" value="80" min="0" max="100">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Set Player -->
+    <section class="set-panel">
+      <h3>&#127929; The Charlotte's Web Set &#127929;</h3>
+      <p class="set-description">
+        Three movements &mdash; like a Philip Glass repetition cycle<br>
+        or a Mozart serenade in three acts.<br>
+        <em>Lullaby &rarr; Woven &rarr; Some Pig</em>
+      </p>
+
+      <div class="set-tracks" id="setTracks">
+        <div class="set-track" id="setTrack0">
+          <span class="set-track-number">I</span>
+          <div class="set-track-info">
+            <div class="set-track-title">Lullaby</div>
+            <div class="set-track-meta">Movement I &mdash; Adagio, gentle as Charlotte's whisper</div>
+          </div>
+          <span class="set-track-status" id="setStatus0">&#9679; waiting</span>
+        </div>
+        <div class="set-track" id="setTrack1">
+          <span class="set-track-number">II</span>
+          <div class="set-track-info">
+            <div class="set-track-title">Woven</div>
+            <div class="set-track-meta">Movement II &mdash; Andante, threads of the web intertwine</div>
+          </div>
+          <span class="set-track-status" id="setStatus1">&#9679; waiting</span>
+        </div>
+        <div class="set-track" id="setTrack2">
+          <span class="set-track-number">III</span>
+          <div class="set-track-info">
+            <div class="set-track-title">SOME PIG</div>
+            <div class="set-track-meta">Movement III &mdash; Allegro, the barnyard revelation</div>
+          </div>
+          <span class="set-track-status" id="setStatus2">&#9679; waiting</span>
+        </div>
+      </div>
+
+      <button class="play-set-btn" id="playSetBtn">&#9654; PLAY THE SET</button>
+      <p class="delay-note">3-second interlude between movements &mdash; like a breath between phrases</p>
+    </section>
+
+    <!-- KONOMI Processing Panel -->
+    <section class="konomi-panel">
+      <h3>&#9889; KONOMI Processing</h3>
+      <div class="konomi-grid">
+        <div class="konomi-stat">
+          <span class="label">&#129504; FemtoLLM</span>
+          <span class="value" id="femtoStatus">Ready</span>
+        </div>
+        <div class="konomi-stat">
+          <span class="label">&#9889; eVGPU</span>
+          <span class="value" id="evgpuStatus">28 cores</span>
+        </div>
+        <div class="konomi-stat">
+          <span class="label">&#129482; BlockArray</span>
+          <span class="value" id="blockStatus">10&times;10&times;10</span>
+        </div>
+        <div class="konomi-stat">
+          <span class="label">&#127922; Cube</span>
+          <span class="value" id="cubeStatus">9 nodes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Playlist -->
+    <section class="playlist-section">
+      <div class="playlist-header">
+        <h3>&#128220; Playlist</h3>
+      </div>
+      <div class="playlist" id="playlist">
+        <div class="track-item" data-index="0">
+          <span class="track-item-icon">&#127925;</span>
+          <div class="track-item-info">
+            <div class="track-item-title">I. Lullaby</div>
+            <div class="track-item-artist">teslasolar</div>
+          </div>
+          <span class="track-item-duration" id="dur0">--:--</span>
+        </div>
+        <div class="track-item" data-index="1">
+          <span class="track-item-icon">&#127925;</span>
+          <div class="track-item-info">
+            <div class="track-item-title">II. Woven</div>
+            <div class="track-item-artist">teslasolar</div>
+          </div>
+          <span class="track-item-duration" id="dur1">--:--</span>
+        </div>
+        <div class="track-item" data-index="2">
+          <span class="track-item-icon">&#127925;</span>
+          <div class="track-item-info">
+            <div class="track-item-title">III. SOME PIG</div>
+            <div class="track-item-artist">teslasolar</div>
+          </div>
+          <span class="track-item-duration" id="dur2">--:--</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Composer Quotes / Glass & Mozart References -->
+    <section class="composer-quotes">
+      <h3>&#9834; COMPOSITIONAL INSPIRATIONS &#9834;</h3>
+      <div class="musical-notation">&#9833; &#9834; &#9835; &#9839; &#9837; &#9834; &#9833;</div>
+      <div class="quote">
+        "Music is a world within itself, with a language we all understand."
+      </div>
+      <div class="quote-attr">&mdash; in the spirit of Philip Glass's repetitive elegance</div>
+      <br>
+      <div class="quote">
+        "The music is not in the notes, but in the silence between."
+      </div>
+      <div class="quote-attr">&mdash; in the spirit of Wolfgang Amadeus Mozart</div>
+      <br>
+      <div class="quote">
+        "You have been my friend. That in itself is a tremendous thing."
+      </div>
+      <div class="quote-attr">&mdash; Charlotte, to Wilbur</div>
+      <div class="musical-notation">&#9837; &#9839; &#9834; &#9835; &#9833; &#9839; &#9837;</div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p class="charlotte-sig">&#128376;&#65039; SOME PIG &middot; TERRIFIC &middot; RADIANT &middot; HUMBLE &#128376;&#65039;</p>
+      <p>KONOMI SYSTEM | eVGPU: CPU-powered | FemtoLLM: 16-dim</p>
+      <p>Charlotte wove her web. We wove this music.</p>
+    </footer>
+  </div>
+
+  <script>
+    // ── Track Data ──
+    const tracks = [
+      { title: 'Lullaby',   file: 'Lullaby.mp4',                        artist: 'teslasolar', movement: 'I'   },
+      { title: 'Woven',     file: 'Woven.mp4',                          artist: 'teslasolar', movement: 'II'  },
+      { title: 'SOME PIG',  file: 'SOME PIG(FRIEND!!! no emene).mp4',   artist: 'teslasolar', movement: 'III' }
+    ];
+
+    const SET_DELAY = 3000; // 3 second delay between movements
+
+    // ── DOM Elements ──
+    const video        = document.getElementById('videoPlayer');
+    const playBtn      = document.getElementById('playBtn');
+    const prevBtn      = document.getElementById('prevBtn');
+    const nextBtn      = document.getElementById('nextBtn');
+    const progressBar  = document.getElementById('progressBar');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl   = document.getElementById('duration');
+    const trackTitle   = document.getElementById('trackTitle');
+    const trackArtist  = document.getElementById('trackArtist');
+    const volumeBar    = document.getElementById('volumeBar');
+    const statusText   = document.getElementById('statusText');
+    const playSetBtn   = document.getElementById('playSetBtn');
+    const transitionOverlay = document.getElementById('transitionOverlay');
+    const transitionText    = document.getElementById('transitionText');
+    const transitionCountdown = document.getElementById('transitionCountdown');
+    const playlistEl   = document.getElementById('playlist');
+
+    let currentTrack = 0;
+    let isPlaying = false;
+    let setMode = false; // true when playing the full set
+    let setIndex = 0;
+
+    // ── Format Time ──
+    function formatTime(s) {
+      if (isNaN(s) || !isFinite(s)) return '0:00';
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    // ── Load Track ──
+    function loadTrack(index) {
+      currentTrack = index;
+      const t = tracks[index];
+      video.src = t.file;
+      trackTitle.textContent = t.movement + '. ' + t.title;
+      trackArtist.textContent = t.artist;
+      statusText.textContent = 'Loaded: ' + t.title;
+
+      // Update playlist highlight
+      document.querySelectorAll('.track-item').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+
+      // Reset progress
+      progressBar.value = 0;
+      currentTimeEl.textContent = '0:00';
+      durationEl.textContent = '0:00';
+    }
+
+    // ── Play / Pause ──
+    function togglePlay() {
+      if (isPlaying) {
+        video.pause();
+        playBtn.textContent = '\u25B6\uFE0F';
+        isPlaying = false;
+        statusText.textContent = 'Paused: ' + tracks[currentTrack].title;
+      } else {
+        video.play().then(() => {
+          playBtn.textContent = '\u23F8\uFE0F';
+          isPlaying = true;
+          statusText.textContent = 'Playing: ' + tracks[currentTrack].title;
+        }).catch(() => {
+          statusText.textContent = 'Click to play (autoplay blocked)';
+        });
+      }
+    }
+
+    // ── Next / Prev ──
+    function nextTrack() {
+      const next = (currentTrack + 1) % tracks.length;
+      loadTrack(next);
+      if (isPlaying) {
+        video.play().catch(() => {});
+      }
+    }
+
+    function prevTrack() {
+      // If more than 3 seconds in, restart current track
+      if (video.currentTime > 3) {
+        video.currentTime = 0;
+        return;
+      }
+      const prev = (currentTrack - 1 + tracks.length) % tracks.length;
+      loadTrack(prev);
+      if (isPlaying) {
+        video.play().catch(() => {});
+      }
+    }
+
+    // ── Progress & Time Updates ──
+    video.addEventListener('timeupdate', () => {
+      if (video.duration) {
+        progressBar.value = (video.currentTime / video.duration) * 100;
+        currentTimeEl.textContent = formatTime(video.currentTime);
+      }
+    });
+
+    video.addEventListener('loadedmetadata', () => {
+      durationEl.textContent = formatTime(video.duration);
+      // Update playlist duration
+      const durEl = document.getElementById('dur' + currentTrack);
+      if (durEl) durEl.textContent = formatTime(video.duration);
+    });
+
+    progressBar.addEventListener('input', () => {
+      if (video.duration) {
+        video.currentTime = (progressBar.value / 100) * video.duration;
+      }
+    });
+
+    // ── Volume ──
+    volumeBar.addEventListener('input', () => {
+      video.volume = volumeBar.value / 100;
+    });
+    video.volume = 0.8;
+
+    // ── Button Listeners ──
+    playBtn.addEventListener('click', togglePlay);
+    nextBtn.addEventListener('click', () => { setMode = false; nextTrack(); });
+    prevBtn.addEventListener('click', () => { setMode = false; prevTrack(); });
+
+    // ── Playlist Click ──
+    playlistEl.addEventListener('click', (e) => {
+      const item = e.target.closest('.track-item');
+      if (!item) return;
+      const idx = parseInt(item.dataset.index, 10);
+      setMode = false;
+      loadTrack(idx);
+      isPlaying = false;
+      togglePlay();
+    });
+
+    // ── SET PLAYER ──
+    function updateSetTrackUI(index, status) {
+      for (let i = 0; i < tracks.length; i++) {
+        const el = document.getElementById('setTrack' + i);
+        const st = document.getElementById('setStatus' + i);
+        el.classList.remove('active', 'completed');
+        if (i < index) {
+          el.classList.add('completed');
+          st.innerHTML = '&#10003; done';
+        } else if (i === index) {
+          el.classList.add('active');
+          st.textContent = status || '\u25B6 playing';
+        } else {
+          st.innerHTML = '&#9679; waiting';
+        }
+      }
+    }
+
+    function showTransition(nextIndex) {
+      return new Promise(resolve => {
+        const t = tracks[nextIndex];
+        transitionText.textContent = 'Next: ' + t.movement + '. ' + t.title;
+        transitionOverlay.classList.add('visible');
+
+        let count = 3;
+        transitionCountdown.textContent = count;
+
+        const interval = setInterval(() => {
+          count--;
+          if (count <= 0) {
+            clearInterval(interval);
+            transitionOverlay.classList.remove('visible');
+            resolve();
+          } else {
+            transitionCountdown.textContent = count;
+          }
+        }, 1000);
+      });
+    }
+
+    async function playSet() {
+      setMode = true;
+      setIndex = 0;
+      playSetBtn.disabled = true;
+      playSetBtn.textContent = '\u23F8 SET PLAYING...';
+
+      for (let i = 0; i < tracks.length; i++) {
+        if (!setMode) break; // cancelled
+
+        setIndex = i;
+        updateSetTrackUI(i, '\u25B6 playing');
+        loadTrack(i);
+        isPlaying = false;
+        togglePlay();
+
+        // Wait for track to end
+        await new Promise(resolve => {
+          const onEnd = () => {
+            video.removeEventListener('ended', onEnd);
+            resolve();
+          };
+          video.addEventListener('ended', onEnd);
+        });
+
+        isPlaying = false;
+        playBtn.textContent = '\u25B6\uFE0F';
+        updateSetTrackUI(i, '\u2713 done');
+
+        // 3-second delay between tracks (not after last)
+        if (i < tracks.length - 1 && setMode) {
+          await showTransition(i + 1);
+        }
+      }
+
+      // Set finished
+      setMode = false;
+      playSetBtn.disabled = false;
+      playSetBtn.textContent = '\u25B6 PLAY THE SET';
+      statusText.textContent = 'Set complete \u2014 Charlotte would be proud';
+      updateSetTrackUI(-1);
+    }
+
+    playSetBtn.addEventListener('click', () => {
+      if (setMode) {
+        // Cancel set
+        setMode = false;
+        video.pause();
+        isPlaying = false;
+        playBtn.textContent = '\u25B6\uFE0F';
+        playSetBtn.disabled = false;
+        playSetBtn.textContent = '\u25B6 PLAY THE SET';
+        statusText.textContent = 'Set cancelled';
+        transitionOverlay.classList.remove('visible');
+      } else {
+        playSet();
+      }
+    });
+
+    // ── Track End (non-set mode) ──
+    video.addEventListener('ended', () => {
+      if (!setMode) {
+        isPlaying = false;
+        playBtn.textContent = '\u25B6\uFE0F';
+        statusText.textContent = 'Ended: ' + tracks[currentTrack].title;
+      }
+    });
+
+    // ── Init ──
+    loadTrack(0);
+
+    // ── Preload durations ──
+    tracks.forEach((t, i) => {
+      const tmp = document.createElement('video');
+      tmp.preload = 'metadata';
+      tmp.src = t.file;
+      tmp.addEventListener('loadedmetadata', () => {
+        const el = document.getElementById('dur' + i);
+        if (el) el.textContent = formatTime(tmp.duration);
+      });
+    });
+  </script>
+</body>
+</html>
