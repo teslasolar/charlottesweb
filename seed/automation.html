@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p=11 Batch Automation - Charlotte's Seed Bloom</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --purple-deep: #0d0a1a; --purple-dark: #1a1033; --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0; --purple-glow: #9b59b6; --purple-bright: #c084fc;
+      --gold: #d4a574; --gold-light: #f0d9b5; --green: #4ade80;
+      --text: #e8dff5; --text-dim: #9b8bb4;
+    }
+    body { background: var(--purple-deep); color: var(--text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .nav a { color: var(--purple-bright); text-decoration: none; font-size: 0.9em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .phase-tag { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.85em; letter-spacing: 2px; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { font-family: 'Cinzel', serif; font-size: 2em; font-weight: 900; color: var(--purple-bright); margin-bottom: 6px; }
+    .header .isa { font-size: 0.85em; color: var(--green); }
+    .header p { color: var(--text-dim); font-style: italic; margin-top: 8px; font-size: 0.95em; }
+
+    .info-box { background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(74, 222, 128, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .info-box h3 { font-family: 'Cinzel', serif; color: var(--green); margin-bottom: 8px; font-size: 1em; }
+    .info-box p, .info-box li { color: var(--text-dim); font-size: 0.9em; line-height: 1.6; }
+    .info-box ul { margin-left: 20px; margin-top: 6px; }
+
+    /* Pipeline */
+    .pipeline { margin: 25px 0; }
+    .pipeline h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 15px; }
+    .pipe-steps { display: flex; gap: 0; flex-wrap: wrap; justify-content: center; }
+    .pipe-step { flex: 1; min-width: 140px; padding: 16px; text-align: center; background: rgba(26, 16, 51, 0.7);
+      border: 1px solid rgba(155, 89, 182, 0.2); position: relative; }
+    .pipe-step:first-child { border-radius: 12px 0 0 12px; }
+    .pipe-step:last-child { border-radius: 0 12px 12px 0; }
+    .pipe-step .pipe-icon { font-size: 1.8em; margin-bottom: 6px; }
+    .pipe-step .pipe-name { font-family: 'Cinzel', serif; font-size: 0.85em; color: var(--purple-bright); }
+    .pipe-step .pipe-desc { font-size: 0.75em; color: var(--text-dim); margin-top: 4px; }
+    .pipe-arrow { display: flex; align-items: center; color: var(--gold); font-size: 1.5em; padding: 0 4px; }
+
+    /* Automation Cards */
+    .auto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 25px 0; }
+    .auto-card { padding: 20px; background: linear-gradient(145deg, rgba(26, 16, 51, 0.8), rgba(13, 10, 26, 0.9));
+      border: 1px solid rgba(155, 89, 182, 0.2); border-radius: 12px; }
+    .auto-card h3 { font-family: 'Cinzel', serif; font-size: 1em; color: var(--purple-bright); margin-bottom: 8px; }
+    .auto-card p { font-size: 0.9em; color: var(--text-dim); line-height: 1.5; }
+    .auto-card .status-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75em;
+      margin-top: 10px; letter-spacing: 1px; font-family: 'Cinzel', serif; }
+    .badge-ready { background: rgba(74, 222, 128, 0.15); color: var(--green); border: 1px solid rgba(74, 222, 128, 0.3); }
+    .badge-pending { background: rgba(212, 165, 116, 0.15); color: var(--gold); border: 1px solid rgba(212, 165, 116, 0.3); }
+
+    /* Fulfillment Simulator */
+    .simulator { margin: 25px 0; background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: 12px; padding: 25px; }
+    .simulator h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--green); margin-bottom: 15px; }
+    .sim-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 15px; align-items: end; }
+    .form-group { }
+    .form-group label { display: block; font-size: 0.8em; color: var(--text-dim); margin-bottom: 4px; }
+    .form-group input, .form-group select { width: 100%; padding: 8px 12px; background: rgba(26, 16, 51, 0.8);
+      border: 1px solid rgba(155, 89, 182, 0.3); border-radius: 8px; color: var(--text);
+      font-family: 'Cormorant Garamond', serif; font-size: 0.95em; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--purple-glow); outline: none; }
+    .btn { padding: 8px 18px; font-family: 'Cinzel', serif; font-size: 0.85em; font-weight: 700; letter-spacing: 1px;
+      color: var(--text); background: rgba(45, 27, 105, 0.5); border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .btn:hover { background: rgba(107, 63, 160, 0.5); border-color: var(--purple-glow); }
+    .btn-green { border-color: rgba(74, 222, 128, 0.3); }
+    .btn-green:hover { border-color: var(--green); background: rgba(22, 101, 52, 0.3); }
+
+    .sim-output { min-height: 100px; }
+    .sim-step { padding: 10px 16px; margin-bottom: 6px; background: rgba(45, 27, 105, 0.2); border-radius: 8px;
+      border-left: 3px solid var(--purple-light); font-size: 0.9em; display: flex; align-items: center; gap: 10px;
+      opacity: 0; transform: translateX(-10px); transition: all 0.3s; }
+    .sim-step.visible { opacity: 1; transform: translateX(0); }
+    .sim-step.done { border-left-color: var(--green); }
+    .sim-step .step-icon { font-size: 1.2em; }
+    .sim-step .step-text { color: var(--text-dim); }
+    .sim-step .step-time { margin-left: auto; font-family: monospace; font-size: 0.8em; color: var(--gold); }
+
+    /* Hardware */
+    .hardware { margin: 25px 0; }
+    .hardware h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 15px; }
+    .hw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .hw-item { padding: 16px; background: rgba(26, 16, 51, 0.6); border: 1px solid rgba(155, 89, 182, 0.15);
+      border-radius: 10px; text-align: center; }
+    .hw-item .hw-icon { font-size: 2em; margin-bottom: 6px; }
+    .hw-item .hw-name { font-family: 'Cinzel', serif; font-size: 0.9em; color: var(--text); }
+    .hw-item .hw-price { color: var(--green); font-weight: 700; margin-top: 4px; }
+    .hw-item .hw-desc { font-size: 0.8em; color: var(--text-dim); margin-top: 4px; }
+    .hw-total { text-align: center; margin-top: 12px; font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.1em; }
+
+    .footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15); margin-top: 30px; }
+
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.5em; }
+      .pipe-steps { flex-direction: column; }
+      .pipe-step { border-radius: 0 !important; }
+      .pipe-step:first-child { border-radius: 12px 12px 0 0 !important; }
+      .pipe-step:last-child { border-radius: 0 0 12px 12px !important; }
+      .pipe-arrow { justify-content: center; transform: rotate(90deg); }
+      .sim-form { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html">&larr; Back to Seed Bloom</a>
+      <span class="phase-tag">p=11 &middot; ISA-61131</span>
+    </nav>
+
+    <header class="header">
+      <h1>Batch Automation</h1>
+      <span class="isa">ISA-61131: Programmable Logic</span>
+      <p>Turn manual processes into one-click batch operations. Charlotte doesn't write the script &mdash; Charlotte runs the script.</p>
+    </header>
+
+    <div class="pipeline">
+      <h2>The Automation Pipeline</h2>
+      <div class="pipe-steps">
+        <div class="pipe-step"><div class="pipe-icon">&#128196;</div><div class="pipe-name">CSV</div><div class="pipe-desc">Master seed data</div></div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-step"><div class="pipe-icon">&#127912;</div><div class="pipe-name">Label Gen</div><div class="pipe-desc">Template merge</div></div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-step"><div class="pipe-icon">&#128424;</div><div class="pipe-name">Printer</div><div class="pipe-desc">Thermal print</div></div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-step"><div class="pipe-icon">&#128230;</div><div class="pipe-name">Pack</div><div class="pipe-desc">Pick & seal</div></div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-step"><div class="pipe-icon">&#128666;</div><div class="pipe-name">Ship</div><div class="pipe-desc">Label & send</div></div>
+      </div>
+    </div>
+
+    <div class="auto-grid">
+      <div class="auto-card">
+        <h3>Label Batch Print</h3>
+        <p>One command. All 60 labels print. Reads master CSV, merges data into label templates, sends to thermal printer.</p>
+        <span class="status-badge badge-ready">Ready via p=5</span>
+      </div>
+      <div class="auto-card">
+        <h3>Order Auto-Decrement</h3>
+        <p>New order comes in &rarr; inventory auto-decrements &rarr; shipping label auto-generates &rarr; packing slip auto-prints.</p>
+        <span class="status-badge badge-ready">Ready via p=3</span>
+      </div>
+      <div class="auto-card">
+        <h3>Packing Slip Generator</h3>
+        <p>Auto-generates packing slip PDF with customer info, ordered varieties, quantities, and lot numbers.</p>
+        <span class="status-badge badge-ready">Configured</span>
+      </div>
+      <div class="auto-card">
+        <h3>Reorder Alerts</h3>
+        <p>Automatic notifications when stock drops below threshold. Never miss a reorder window again.</p>
+        <span class="status-badge badge-ready">Active via p=3</span>
+      </div>
+    </div>
+
+    <div class="simulator">
+      <h2>Fulfillment Simulator</h2>
+      <p style="color: var(--text-dim); font-size: 0.9em; margin-bottom: 15px;">Watch the automated pipeline process an order. Charlotte's job: pick the seeds, put them in the envelope, stick the label on. Everything else is automated.</p>
+      <div class="sim-form">
+        <div class="form-group">
+          <label>Customer</label>
+          <input type="text" id="simCustomer" value="Jane from Portland" placeholder="Customer name">
+        </div>
+        <div class="form-group">
+          <label>Variety</label>
+          <select id="simVariety"></select>
+        </div>
+        <button class="btn btn-green" onclick="runSimulation()">Run Pipeline</button>
+      </div>
+      <div class="sim-output" id="simOutput"></div>
+    </div>
+
+    <div class="info-box">
+      <h3>Time Savings</h3>
+      <p>Manual fulfillment: <strong style="color:var(--gold)">15+ minutes per order</strong>. With automation pipeline: <strong style="color:var(--green)">2 minutes per order</strong>. Charlotte picks seeds, seals bag, applies label. Everything else is automated.</p>
+    </div>
+
+    <div class="hardware">
+      <h2>Required Hardware</h2>
+      <div class="hw-grid">
+        <div class="hw-item"><div class="hw-icon">&#128424;</div><div class="hw-name">Thermal Printer</div><div class="hw-price">~$40</div><div class="hw-desc">DYMO 4XL or Brother QL-820NWB</div></div>
+        <div class="hw-item"><div class="hw-icon">&#9878;&#65039;</div><div class="hw-name">Kitchen Scale</div><div class="hw-price">~$15</div><div class="hw-desc">For seed weights</div></div>
+        <div class="hw-item"><div class="hw-icon">&#128188;</div><div class="hw-name">Poly Bags + Sealer</div><div class="hw-price">~$20</div><div class="hw-desc">Heat sealer for packets</div></div>
+      </div>
+      <p class="hw-total">Total Hardware: under $100. The automation is in the SOFTWARE not the hardware.</p>
+    </div>
+
+    <footer class="footer">
+      <p>Effort: ~1 day to build the pipeline. Then each order = 2 minutes of Charlotte's time. Down from 15+.</p>
+    </footer>
+  </div>
+
+  <script>
+    const CSV_KEY = 'charlotte_seed_csv';
+
+    function loadVarieties() {
+      const seeds = JSON.parse(localStorage.getItem(CSV_KEY) || '[]');
+      const sel = document.getElementById('simVariety');
+      if (seeds.length > 0) {
+        sel.innerHTML = seeds.map(s => `<option value="${s.variety_name}">${s.variety_name}</option>`).join('');
+      } else {
+        sel.innerHTML = '<option>Cherry Tomato</option><option>Basil Genovese</option><option>Sunflower Mammoth</option>';
+      }
+    }
+
+    async function runSimulation() {
+      const customer = document.getElementById('simCustomer').value || 'Customer';
+      const variety = document.getElementById('simVariety').value || 'Seeds';
+      const output = document.getElementById('simOutput');
+      output.innerHTML = '';
+
+      const steps = [
+        { icon: '&#128229;', text: `Order received from ${customer}: 1x ${variety}`, time: '0.1s' },
+        { icon: '&#128269;', text: `Looking up ${variety} in master CSV...`, time: '0.2s' },
+        { icon: '&#128202;', text: 'Inventory check: stock available, decrementing...', time: '0.3s' },
+        { icon: '&#127912;', text: 'Generating packing slip PDF...', time: '0.5s' },
+        { icon: '&#128424;', text: 'Printing seed packet label (thermal)...', time: '0.8s' },
+        { icon: '&#128230;', text: `CHARLOTTE: Pick ${variety} seeds, seal in packet, apply label`, time: '~90s' },
+        { icon: '&#128666;', text: 'Generating shipping label...', time: '0.3s' },
+        { icon: '&#9989;', text: `Order fulfilled! ${customer} will love their ${variety}.`, time: 'DONE' },
+      ];
+
+      for (let i = 0; i < steps.length; i++) {
+        const step = steps[i];
+        const div = document.createElement('div');
+        div.className = 'sim-step';
+        div.innerHTML = `<span class="step-icon">${step.icon}</span><span class="step-text">${step.text}</span><span class="step-time">${step.time}</span>`;
+        output.appendChild(div);
+        await new Promise(r => setTimeout(r, 400));
+        div.classList.add('visible');
+        if (i === steps.length - 1) div.classList.add('done');
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+
+    loadVarieties();
+  </script>
+</body>
+</html>

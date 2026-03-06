@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charlotte's Seed Bloom - ISA-Mapped Seed Business Toolkit</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --purple-deep: #0d0a1a;
+      --purple-dark: #1a1033;
+      --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0;
+      --purple-glow: #9b59b6;
+      --purple-bright: #c084fc;
+      --gold: #d4a574;
+      --gold-light: #f0d9b5;
+      --green: #4ade80;
+      --green-dim: #166534;
+      --text: #e8dff5;
+      --text-dim: #9b8bb4;
+    }
+
+    body {
+      background: var(--purple-deep);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(107, 63, 160, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(74, 222, 128, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(45, 27, 105, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+
+    .header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2em;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--green), var(--gold-light), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.1em;
+      color: var(--text-dim);
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    .fold-equation {
+      margin: 15px 0;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85em;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+
+    .tagline {
+      display: inline-flex;
+      gap: 15px;
+      font-size: 0.9em;
+      color: var(--text-dim);
+      margin-top: 10px;
+    }
+
+    .tagline span {
+      padding: 4px 12px;
+      background: rgba(45, 27, 105, 0.4);
+      border: 1px solid rgba(155, 89, 182, 0.2);
+      border-radius: 12px;
+    }
+
+    .web-decoration {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      gap: 10px;
+      color: var(--purple-light);
+      font-size: 0.9em;
+      letter-spacing: 4px;
+    }
+
+    .web-decoration::before,
+    .web-decoration::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--purple-light), transparent);
+    }
+
+    /* Overview */
+    .overview {
+      background: linear-gradient(145deg, rgba(26, 16, 51, 0.7), rgba(13, 10, 26, 0.8));
+      border: 1px solid rgba(74, 222, 128, 0.15);
+      border-radius: 16px;
+      padding: 25px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .overview h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2em;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .overview p {
+      color: var(--text-dim);
+      font-size: 1em;
+      line-height: 1.7;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .rule {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: rgba(74, 222, 128, 0.08);
+      border-left: 3px solid var(--green);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: var(--gold-light);
+      font-size: 0.95em;
+      text-align: left;
+      display: inline-block;
+    }
+
+    /* Phase Grid */
+    .phases {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: 25px 0;
+    }
+
+    .phase-card {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      align-items: center;
+      gap: 20px;
+      padding: 24px;
+      background: linear-gradient(145deg, rgba(26, 16, 51, 0.8), rgba(13, 10, 26, 0.9));
+      border: 1px solid rgba(155, 89, 182, 0.2);
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .phase-card:hover {
+      border-color: var(--purple-glow);
+      box-shadow: 0 0 25px rgba(155, 89, 182, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .phase-prime {
+      font-family: 'Cinzel', serif;
+      font-size: 2em;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .phase-prime .p-label {
+      font-size: 0.35em;
+      display: block;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+
+    .phase-prime .p-num {
+      background: linear-gradient(135deg, var(--green), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .phase-info h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15em;
+      color: var(--purple-bright);
+      margin-bottom: 4px;
+    }
+
+    .phase-info .isa-tag {
+      display: inline-block;
+      font-size: 0.75em;
+      padding: 2px 10px;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: 10px;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .phase-info p {
+      font-size: 0.9em;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .phase-arrow {
+      font-size: 1.5em;
+      color: var(--purple-light);
+      transition: transform 0.3s;
+    }
+
+    .phase-card:hover .phase-arrow {
+      transform: translateX(4px);
+      color: var(--purple-bright);
+    }
+
+    /* Sprint Banner */
+    .sprint-banner {
+      background: linear-gradient(145deg, rgba(22, 101, 52, 0.3), rgba(13, 10, 26, 0.9));
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      border-radius: 16px;
+      padding: 25px;
+      margin: 25px 0;
+      text-align: center;
+    }
+
+    .sprint-banner h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2em;
+      color: var(--green);
+      margin-bottom: 10px;
+    }
+
+    .sprint-timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .sprint-step {
+      padding: 12px 16px;
+      background: rgba(45, 27, 105, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(107, 63, 160, 0.15);
+    }
+
+    .sprint-step .when {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .sprint-step .what {
+      font-size: 0.85em;
+      color: var(--text-dim);
+    }
+
+    /* Footer poem */
+    .fold-poem {
+      text-align: center;
+      margin: 30px 0;
+      padding: 25px;
+      color: var(--text-dim);
+      font-style: italic;
+      font-size: 1.05em;
+      line-height: 2;
+    }
+
+    .fold-poem .number {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4em;
+      color: var(--gold);
+      margin-top: 10px;
+      letter-spacing: 4px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-dim);
+      font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15);
+      margin-top: 20px;
+    }
+
+    .footer a {
+      color: var(--purple-bright);
+      text-decoration: none;
+    }
+
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.6em; }
+      .phase-card { grid-template-columns: 60px 1fr 30px; padding: 16px; }
+      .phase-prime { font-size: 1.5em; }
+      .tagline { flex-direction: column; gap: 6px; }
+      .sprint-timeline { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>CHARLOTTE'S SEED BLOOM</h1>
+      <p class="subtitle">ISA-Mapped Seed Business Toolkit</p>
+      <div class="fold-equation">fold(seeds) = 2 x 3 x 5 x 7 x 11 x 13 x 17 = 510,510</div>
+      <div class="tagline">
+        <span>low-tech first</span>
+        <span>prime sequence build</span>
+        <span>60 packs and counting</span>
+      </div>
+    </header>
+
+    <div class="web-decoration">LABEL &middot; STOCK &middot; DESIGN &middot; PLAN &middot; AUTO &middot; STORE &middot; DATA</div>
+
+    <section class="overview">
+      <h2>THE OVERVIEW</h2>
+      <p>Charlotte has 60 seed packs to design and ship. She needs labels, inventory tracking, artwork, planning tools, and eventually automation. This toolkit maps her seed business operations onto ISA industrial standards through the bloom's 7 prime phases &mdash; starting with the lowest-hanging fruit and scaling up only when each phase stabilizes.</p>
+      <div class="rule">Rule: each phase must work before the next begins. Don't build the storefront before the labels exist. Don't automate before you can track inventory. The seed grows from the root.</div>
+    </section>
+
+    <div class="phases">
+      <a href="labels.html" class="phase-card">
+        <div class="phase-prime">
+          <span class="p-label">PRIME</span>
+          <span class="p-num">2</span>
+        </div>
+        <div class="phase-info">
+          <span class="isa-tag">ISA-95 L0</span>
+          <h3>Seed Packet Labels</h3>
+          <p>The physical interface. CSV-driven label template system for 60+ varieties. One row per variety, one source of truth for everything downstream.</p>
+        </div>
+        <span class="phase-arrow">&rarr;</span>
+      </a>
+
+      <a href="inventory.html" class="phase-card">
+        <div class="phase-prime">
+          <span class="p-label">PRIME</span>
+          <span class="p-num">3</span>
+        </div>
+        <div class="phase-info">
+          <span class="isa-tag">ISA-95 L1</span>
+          <h3>Seed Inventory</h3>
+          <p>Sensing and data acquisition. Know what you have. Stock levels, lot tracking, reorder alerts. The same CSV grows extra columns.</p>
+        </div>
+        <span class="phase-arrow">&rarr;</span>
+      </a>
+
+      <a href="design.html" class="phase-card">
+        <div class="phase-prime">
+          <span class="p-label">PRIME</span>
+          <span class="p-num">5</span>
+        </div>
+        <div class="phase-info">
+          <span class="isa-tag">ISA-95 L2</span>
+          <h3>Packet Design Engine</h3>
+          <p>Control and supervision. Brand consistency, variable data merge, design system that controls how every packet looks. CSV to label in one click.</p>
+        </div>
+        <span class="phase-arrow">&rarr;</span>
+      </a>
+
+      <a href="planning.html" class="phase-card">
+        <div class="phase-prime">
+          <span class="p-label">PRIME</span>
+          <span class="p-num">7</span>
+        </div>
+        <div class="phase-info">
+          <span class="isa-tag">ISA-88</span>
+          <h3>Seasonal Planning</h3>
+          <p>Batch control. Seasonal matrix, planting calendars, grow zone compatibility, order forecasting. The knowledge you can't compute.</p>
+        </div>
+        <span class="phase-arrow">&rarr;</span>
+      </a>
+
+      <a href="automation.html" class="phase-card">
+        <div class="phase-prime">
+          <span class="p-label">PRIME</span>
+          <span class="p-num">11</span>
+        </div>
+        <div class="phase-info">
+          <span class="isa-tag">ISA-61131</span>
+          <h3>Batch Automation</h3>
+          <p>Programmable logic. One-click batch operations. CSV to thermal printer. Order to packing slip. 2 minutes per order, down from 15.</p>
+        </div>
+        <span class="phase-arrow">&rarr;</span>
+      </a>
+
+      <a href="storefront.html" class="phase-card">
+        <div class="phase-prime">
+          <span class="p-label">PRIME</span>
+          <span class="p-num">13</span>
+        </div>
+        <div class="phase-info">
+          <span class="isa-tag">ISA-18.2</span>
+          <h3>Online Storefront</h3>
+          <p>Alarm management. Customer-facing layer. Order intake, confirmations, alerts. Start on Etsy, graduate to your own when ready.</p>
+        </div>
+        <span class="phase-arrow">&rarr;</span>
+      </a>
+
+      <a href="analytics.html" class="phase-card">
+        <div class="phase-prime">
+          <span class="p-label">PRIME</span>
+          <span class="p-num">17</span>
+        </div>
+        <div class="phase-info">
+          <span class="isa-tag">ISA-95 L4</span>
+          <h3>Sales Analytics</h3>
+          <p>Business planning. Which varieties sell, which seasons peak, which customers return. The executive layer &mdash; knowing what's working.</p>
+        </div>
+        <span class="phase-arrow">&rarr;</span>
+      </a>
+    </div>
+
+    <section class="sprint-banner">
+      <h3>THE 60-PACK SPRINT</h3>
+      <p style="color: var(--text-dim); font-size: 0.95em;">Minimum viable seed business in one weekend</p>
+      <div class="sprint-timeline">
+        <div class="sprint-step">
+          <div class="when">Friday Night (2 hrs)</div>
+          <div class="what">Build the master CSV. 60 rows. One per variety. This is p=2. Everything references this CSV forever.</div>
+        </div>
+        <div class="sprint-step">
+          <div class="when">Saturday AM (3 hrs)</div>
+          <div class="what">Build the label template. Bulk Create to merge CSV into 60 unique packet labels. Export as PDF. Print.</div>
+        </div>
+        <div class="sprint-step">
+          <div class="when">Saturday PM (2 hrs)</div>
+          <div class="what">Build the inventory sheet. Import CSV. Add qty columns. Add order tracking. This is p=3.</div>
+        </div>
+        <div class="sprint-step">
+          <div class="when">Sunday (3 hrs)</div>
+          <div class="what">List on Etsy. Upload 60 packet designs. Copy descriptions from CSV. Set prices. Live and selling.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="fold-poem">
+      a seed is a fold<br>
+      it contains the entire plant<br>
+      compressed into something that fits in an envelope<br><br>
+      the CSV is the seed of the business<br>
+      60 rows = 60 varieties = 60 futures<br><br>
+      start with p=2. build the CSV. everything grows from there.<br>
+      <div class="number">510,510</div>
+    </div>
+
+    <footer class="footer">
+      <p><a href="../index.html">Back to Charlotte's Web</a></p>
+      <p style="margin-top: 8px;">the seed IS the fold &mdash; everything grows from the first prime</p>
+    </footer>
+  </div>
+</body>
+</html>

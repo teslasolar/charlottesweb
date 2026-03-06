@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p=17 Sales Analytics - Charlotte's Seed Bloom</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --purple-deep: #0d0a1a; --purple-dark: #1a1033; --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0; --purple-glow: #9b59b6; --purple-bright: #c084fc;
+      --gold: #d4a574; --gold-light: #f0d9b5; --green: #4ade80; --red: #ef4444;
+      --text: #e8dff5; --text-dim: #9b8bb4;
+    }
+    body { background: var(--purple-deep); color: var(--text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .nav a { color: var(--purple-bright); text-decoration: none; font-size: 0.9em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .phase-tag { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.85em; letter-spacing: 2px; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { font-family: 'Cinzel', serif; font-size: 2em; font-weight: 900; color: var(--purple-bright); margin-bottom: 6px; }
+    .header .isa { font-size: 0.85em; color: var(--green); }
+    .header p { color: var(--text-dim); font-style: italic; margin-top: 8px; font-size: 0.95em; }
+
+    .info-box { background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(74, 222, 128, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .info-box h3 { font-family: 'Cinzel', serif; color: var(--green); margin-bottom: 8px; font-size: 1em; }
+    .info-box p { color: var(--text-dim); font-size: 0.9em; line-height: 1.6; }
+
+    /* KPI Cards */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 20px 0; }
+    .kpi { padding: 20px; background: linear-gradient(145deg, rgba(26, 16, 51, 0.8), rgba(13, 10, 26, 0.9));
+      border: 1px solid rgba(155, 89, 182, 0.2); border-radius: 14px; text-align: center; }
+    .kpi .kpi-value { font-family: 'Cinzel', serif; font-size: 2.2em; font-weight: 900; color: var(--purple-bright); }
+    .kpi .kpi-label { font-size: 0.8em; color: var(--text-dim); margin-top: 4px; }
+    .kpi .kpi-change { font-size: 0.8em; margin-top: 4px; }
+    .kpi .up { color: var(--green); }
+    .kpi .down { color: var(--red); }
+
+    /* Chart Containers */
+    .chart-section { margin: 25px 0; }
+    .chart-section h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 15px; }
+    .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+    .chart-card { background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(155, 89, 182, 0.15); border-radius: 14px; padding: 20px; }
+    .chart-card h3 { font-family: 'Cinzel', serif; font-size: 1em; color: var(--gold); margin-bottom: 12px; }
+
+    /* Bar Chart (CSS) */
+    .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; }
+    .bar-label { min-width: 120px; font-size: 0.8em; color: var(--text-dim); text-align: right; }
+    .bar-track { flex: 1; height: 24px; background: rgba(45, 27, 105, 0.3); border-radius: 4px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; display: flex; align-items: center;
+      padding: 0 8px; font-size: 0.7em; font-weight: 700; color: rgba(255,255,255,0.9); }
+    .bar-value { font-size: 0.8em; color: var(--text-dim); min-width: 30px; }
+
+    /* Donut Chart (CSS) */
+    .donut-container { display: flex; align-items: center; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .donut { width: 160px; height: 160px; border-radius: 50%; position: relative;
+      display: flex; align-items: center; justify-content: center; }
+    .donut-center { width: 80px; height: 80px; background: rgba(13, 10, 26, 0.9); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 1; }
+    .donut-center .dc-value { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); }
+    .donut-center .dc-label { font-size: 0.65em; color: var(--text-dim); }
+    .donut-legend { display: flex; flex-direction: column; gap: 6px; }
+    .legend-row { display: flex; align-items: center; gap: 8px; font-size: 0.85em; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+    .legend-text { color: var(--text-dim); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    th { font-family: 'Cinzel', serif; background: rgba(45, 27, 105, 0.5); color: var(--gold); padding: 10px 12px;
+      text-align: left; font-size: 0.8em; letter-spacing: 1px; border-bottom: 1px solid rgba(155, 89, 182, 0.2); }
+    td { padding: 8px 12px; border-bottom: 1px solid rgba(107, 63, 160, 0.1); }
+    tr:hover { background: rgba(45, 27, 105, 0.2); }
+
+    .btn { padding: 8px 18px; font-family: 'Cinzel', serif; font-size: 0.85em; font-weight: 700; letter-spacing: 1px;
+      color: var(--text); background: rgba(45, 27, 105, 0.5); border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .btn:hover { background: rgba(107, 63, 160, 0.5); border-color: var(--purple-glow); }
+    .btn-green { border-color: rgba(74, 222, 128, 0.3); }
+    .btn-green:hover { border-color: var(--green); background: rgba(22, 101, 52, 0.3); }
+
+    .toolbar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+
+    .footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15); margin-top: 30px; }
+
+    @media (max-width: 700px) {
+      .header h1 { font-size: 1.5em; }
+      .chart-row { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html">&larr; Back to Seed Bloom</a>
+      <span class="phase-tag">p=17 &middot; ISA-95 L4</span>
+    </nav>
+
+    <header class="header">
+      <h1>Sales Analytics</h1>
+      <span class="isa">ISA-95 Level 4: Business Planning & Logistics</span>
+      <p>Which varieties sell, which seasons peak, which customers return, what to grow more of next year. Knowing what's working.</p>
+    </header>
+
+    <div class="toolbar">
+      <button class="btn btn-green" onclick="loadData()">Refresh Data</button>
+      <button class="btn" onclick="loadSampleData()">Load Sample Analytics</button>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-value" id="kpiRevenue">$0</div><div class="kpi-label">Total Revenue</div><div class="kpi-change up" id="kpiRevChange"></div></div>
+      <div class="kpi"><div class="kpi-value" id="kpiOrders">0</div><div class="kpi-label">Total Orders</div><div class="kpi-change up" id="kpiOrdChange"></div></div>
+      <div class="kpi"><div class="kpi-value" id="kpiAOV">$0</div><div class="kpi-label">Avg Order Value</div></div>
+      <div class="kpi"><div class="kpi-value" id="kpiVarieties">0</div><div class="kpi-label">Active Varieties</div></div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-row">
+        <div class="chart-card">
+          <h3>Sales by Variety</h3>
+          <div class="bar-chart" id="varietyChart"></div>
+        </div>
+        <div class="chart-card">
+          <h3>Revenue Breakdown</h3>
+          <div class="donut-container" id="donutChart">
+            <p style="color: var(--text-dim); font-style: italic;">No data yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card" style="margin-bottom: 20px;">
+        <h3>Monthly Sales Trend</h3>
+        <div class="bar-chart" id="monthlyChart"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Top Customers</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Customer</th><th>Orders</th><th>Units</th><th>Revenue</th><th>Repeat?</th></tr></thead>
+            <tbody id="customerTable"><tr><td colspan="5" style="text-align:center; color: var(--text-dim); font-style: italic;">No customer data. Record orders in p=3 Inventory.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>What's Next</h3>
+      <p>After one full season: which varieties sell out first = grow more. Which sit = discontinue or discount. This dashboard auto-populates from the data already flowing through your p=3 inventory and orders system. Update monthly. Takes 10 minutes once set up.</p>
+    </div>
+
+    <footer class="footer">
+      <p>Effort: ~1 hour to build the dashboard. Then it's automated from the data already flowing through the system.</p>
+    </footer>
+  </div>
+
+  <script>
+    const ORD_KEY = 'charlotte_orders';
+    const CSV_KEY = 'charlotte_seed_csv';
+    const COLORS = ['#c084fc','#4ade80','#d4a574','#f472b6','#38bdf8','#facc15','#fb923c','#a78bfa','#34d399','#f87171'];
+
+    function getPrice(variety) {
+      const seeds = JSON.parse(localStorage.getItem(CSV_KEY) || '[]');
+      const s = seeds.find(x => x.variety_name === variety);
+      if (!s) return 2.99;
+      const w = parseFloat(s.weight_grams) || 1;
+      if (w > 3) return 3.99;
+      if (w > 1) return 3.49;
+      return 2.99;
+    }
+
+    function loadData() {
+      const orders = JSON.parse(localStorage.getItem(ORD_KEY) || '[]');
+      if (orders.length === 0) {
+        document.getElementById('varietyChart').innerHTML = '<p style="color:var(--text-dim);font-style:italic;">No order data yet. Record orders in p=3 Inventory, or click "Load Sample Analytics".</p>';
+        return;
+      }
+      renderAnalytics(orders);
+    }
+
+    function loadSampleData() {
+      const sampleOrders = [
+        { date: '2026-01-15', customer: 'Jane P.', variety: 'Cherry Tomato', qty: 3, status: 'fulfilled' },
+        { date: '2026-01-18', customer: 'Mike R.', variety: 'Basil Genovese', qty: 2, status: 'fulfilled' },
+        { date: '2026-01-22', customer: 'Jane P.', variety: 'Sunflower Mammoth', qty: 1, status: 'fulfilled' },
+        { date: '2026-02-03', customer: 'Sarah L.', variety: 'Cherry Tomato', qty: 2, status: 'fulfilled' },
+        { date: '2026-02-10', customer: 'Tom B.', variety: 'Lavender English', qty: 4, status: 'fulfilled' },
+        { date: '2026-02-14', customer: 'Jane P.', variety: 'Zinnia Giant', qty: 2, status: 'fulfilled' },
+        { date: '2026-02-20', customer: 'Amy K.', variety: 'Kale Lacinato', qty: 1, status: 'fulfilled' },
+        { date: '2026-03-01', customer: 'Mike R.', variety: 'Cherry Tomato', qty: 5, status: 'fulfilled' },
+        { date: '2026-03-02', customer: 'Sarah L.', variety: 'Sugar Snap Pea', qty: 3, status: 'fulfilled' },
+        { date: '2026-03-03', customer: 'Lisa M.', variety: 'Marigold French', qty: 2, status: 'fulfilled' },
+        { date: '2026-03-04', customer: 'Tom B.', variety: 'Basil Genovese', qty: 3, status: 'fulfilled' },
+        { date: '2026-03-05', customer: 'Jane P.', variety: 'Butternut Squash', qty: 1, status: 'fulfilled' },
+        { date: '2026-03-05', customer: 'Amy K.', variety: 'Cherry Tomato', qty: 2, status: 'pending' },
+      ];
+      localStorage.setItem(ORD_KEY, JSON.stringify(sampleOrders));
+      renderAnalytics(sampleOrders);
+    }
+
+    function renderAnalytics(orders) {
+      // By variety
+      const byVariety = {};
+      const byCustomer = {};
+      const byMonth = {};
+      let totalRevenue = 0;
+      let totalUnits = 0;
+
+      orders.forEach(o => {
+        const price = getPrice(o.variety);
+        const rev = (o.qty || 1) * price;
+        totalRevenue += rev;
+        totalUnits += (o.qty || 1);
+
+        if (!byVariety[o.variety]) byVariety[o.variety] = { units: 0, revenue: 0 };
+        byVariety[o.variety].units += (o.qty || 1);
+        byVariety[o.variety].revenue += rev;
+
+        if (!byCustomer[o.customer]) byCustomer[o.customer] = { orders: 0, units: 0, revenue: 0 };
+        byCustomer[o.customer].orders++;
+        byCustomer[o.customer].units += (o.qty || 1);
+        byCustomer[o.customer].revenue += rev;
+
+        const month = (o.date || '').substring(0, 7);
+        if (!byMonth[month]) byMonth[month] = { units: 0, revenue: 0 };
+        byMonth[month].units += (o.qty || 1);
+        byMonth[month].revenue += rev;
+      });
+
+      // KPIs
+      document.getElementById('kpiRevenue').textContent = '$' + totalRevenue.toFixed(2);
+      document.getElementById('kpiOrders').textContent = orders.length;
+      document.getElementById('kpiAOV').textContent = '$' + (totalRevenue / orders.length).toFixed(2);
+      document.getElementById('kpiVarieties').textContent = Object.keys(byVariety).length;
+
+      // Variety Bar Chart
+      const sortedVarieties = Object.entries(byVariety).sort((a, b) => b[1].units - a[1].units);
+      const maxUnits = sortedVarieties[0]?.[1].units || 1;
+      document.getElementById('varietyChart').innerHTML = sortedVarieties.map(([name, data], i) =>
+        `<div class="bar-row">
+          <span class="bar-label">${name}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(data.units/maxUnits*100)}%; background:${COLORS[i%COLORS.length]}">${data.units}</div></div>
+          <span class="bar-value">$${data.revenue.toFixed(0)}</span>
+        </div>`
+      ).join('');
+
+      // Donut Chart
+      const totalRev = Object.values(byVariety).reduce((s, v) => s + v.revenue, 0);
+      let cumPercent = 0;
+      const segments = sortedVarieties.map(([name, data], i) => {
+        const pct = (data.revenue / totalRev) * 100;
+        const start = cumPercent;
+        cumPercent += pct;
+        return { name, pct, color: COLORS[i % COLORS.length], start };
+      });
+      const gradient = segments.map(s => `${s.color} ${s.start}% ${s.start + s.pct}%`).join(', ');
+      document.getElementById('donutChart').innerHTML = `
+        <div class="donut" style="background: conic-gradient(${gradient});">
+          <div class="donut-center"><span class="dc-value">$${totalRev.toFixed(0)}</span><span class="dc-label">Total</span></div>
+        </div>
+        <div class="donut-legend">
+          ${segments.slice(0, 6).map(s => `<div class="legend-row"><div class="legend-dot" style="background:${s.color}"></div><span class="legend-text">${s.name} (${s.pct.toFixed(0)}%)</span></div>`).join('')}
+        </div>`;
+
+      // Monthly Chart
+      const sortedMonths = Object.entries(byMonth).sort((a, b) => a[0].localeCompare(b[0]));
+      const maxMonthRev = Math.max(...sortedMonths.map(([_, d]) => d.revenue));
+      document.getElementById('monthlyChart').innerHTML = sortedMonths.map(([month, data], i) =>
+        `<div class="bar-row">
+          <span class="bar-label">${month}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(data.revenue/maxMonthRev*100)}%; background:${COLORS[i%COLORS.length]}">${data.units} units</div></div>
+          <span class="bar-value">$${data.revenue.toFixed(0)}</span>
+        </div>`
+      ).join('');
+
+      // Customer Table
+      const sortedCustomers = Object.entries(byCustomer).sort((a, b) => b[1].revenue - a[1].revenue);
+      document.getElementById('customerTable').innerHTML = sortedCustomers.map(([name, data]) =>
+        `<tr><td>${name}</td><td>${data.orders}</td><td>${data.units}</td><td>$${data.revenue.toFixed(2)}</td>
+          <td style="color:${data.orders > 1 ? 'var(--green)' : 'var(--text-dim)'}">${data.orders > 1 ? 'Yes' : 'No'}</td></tr>`
+      ).join('');
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

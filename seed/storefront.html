@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p=13 Online Storefront - Charlotte's Seed Bloom</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --purple-deep: #0d0a1a; --purple-dark: #1a1033; --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0; --purple-glow: #9b59b6; --purple-bright: #c084fc;
+      --gold: #d4a574; --gold-light: #f0d9b5; --green: #4ade80;
+      --text: #e8dff5; --text-dim: #9b8bb4;
+    }
+    body { background: var(--purple-deep); color: var(--text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .nav a { color: var(--purple-bright); text-decoration: none; font-size: 0.9em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .phase-tag { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.85em; letter-spacing: 2px; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { font-family: 'Cinzel', serif; font-size: 2em; font-weight: 900; color: var(--purple-bright); margin-bottom: 6px; }
+    .header .isa { font-size: 0.85em; color: var(--green); }
+    .header p { color: var(--text-dim); font-style: italic; margin-top: 8px; font-size: 0.95em; }
+
+    .info-box { background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(74, 222, 128, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .info-box h3 { font-family: 'Cinzel', serif; color: var(--green); margin-bottom: 8px; font-size: 1em; }
+    .info-box p, .info-box li { color: var(--text-dim); font-size: 0.9em; line-height: 1.6; }
+    .info-box ul { margin-left: 20px; margin-top: 6px; }
+
+    /* Platform Comparison */
+    .platforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 25px 0; }
+    .platform-card { padding: 24px; background: linear-gradient(145deg, rgba(26, 16, 51, 0.8), rgba(13, 10, 26, 0.9));
+      border: 1px solid rgba(155, 89, 182, 0.2); border-radius: 16px; position: relative; }
+    .platform-card.recommended { border-color: rgba(74, 222, 128, 0.4); }
+    .platform-card.recommended::before { content: 'RECOMMENDED'; position: absolute; top: -10px; right: 16px;
+      background: var(--green); color: #0d0a1a; font-family: 'Cinzel', serif; font-size: 0.65em; font-weight: 700;
+      padding: 3px 12px; border-radius: 8px; letter-spacing: 2px; }
+    .platform-card h3 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 4px; }
+    .platform-card .price { font-size: 1.1em; color: var(--gold); font-weight: 700; margin-bottom: 10px; }
+    .platform-card p { font-size: 0.9em; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px; }
+    .platform-card .pros { list-style: none; padding: 0; }
+    .platform-card .pros li { padding: 4px 0; font-size: 0.85em; color: var(--text-dim); }
+    .platform-card .pros li::before { content: '+ '; color: var(--green); font-weight: bold; }
+
+    /* Store Preview */
+    .store-preview { margin: 25px 0; }
+    .store-preview h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 15px; }
+
+    .store-header-bar { background: linear-gradient(135deg, #2d5016, #4a7c25); padding: 20px 30px; border-radius: 16px 16px 0 0;
+      display: flex; justify-content: space-between; align-items: center; }
+    .store-brand { font-family: 'Cinzel', serif; font-size: 1.4em; font-weight: 900; color: #f8f5f0; }
+    .store-tagline { font-size: 0.85em; color: rgba(248,245,240,0.7); font-style: italic; }
+    .store-cart { background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 20px; color: #f8f5f0;
+      font-size: 0.85em; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+
+    .store-body { background: #f8f5f0; border-radius: 0 0 16px 16px; padding: 24px; }
+    .store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s; cursor: pointer; }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .product-img { background: linear-gradient(135deg, #e8f5e9, #f1f8e9); height: 120px; display: flex;
+      align-items: center; justify-content: center; font-size: 3em; }
+    .product-info { padding: 12px; }
+    .product-info h4 { font-family: 'Cinzel', serif; font-size: 0.95em; color: #2d1b0e; margin-bottom: 4px; }
+    .product-info .product-bot { font-size: 0.75em; color: #8b7355; font-style: italic; }
+    .product-info .product-price { font-size: 1.1em; color: #2d5016; font-weight: 700; margin-top: 6px; }
+    .product-info .product-days { font-size: 0.75em; color: #8b7355; margin-top: 2px; }
+    .add-to-cart-btn { width: 100%; padding: 8px; background: #2d5016; color: white; border: none; border-radius: 6px;
+      font-family: 'Cinzel', serif; font-size: 0.8em; letter-spacing: 1px; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+    .add-to-cart-btn:hover { background: #4a7c25; }
+
+    .store-footer { text-align: center; padding: 12px; background: #eee8dc; border-radius: 0 0 16px 16px; font-size: 0.8em; color: #8b7355; }
+
+    /* Listing Generator */
+    .listing-gen { margin: 25px 0; background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(155, 89, 182, 0.2);
+      border-radius: 12px; padding: 25px; }
+    .listing-gen h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 12px; }
+    .btn { padding: 8px 18px; font-family: 'Cinzel', serif; font-size: 0.85em; font-weight: 700; letter-spacing: 1px;
+      color: var(--text); background: rgba(45, 27, 105, 0.5); border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .btn:hover { background: rgba(107, 63, 160, 0.5); border-color: var(--purple-glow); }
+    .btn-green { border-color: rgba(74, 222, 128, 0.3); }
+    .btn-green:hover { border-color: var(--green); background: rgba(22, 101, 52, 0.3); }
+
+    .listing-output { margin-top: 15px; }
+    .listing-item { padding: 16px; margin-bottom: 10px; background: rgba(45, 27, 105, 0.2); border-radius: 10px;
+      border: 1px solid rgba(107, 63, 160, 0.15); }
+    .listing-item h4 { font-family: 'Cinzel', serif; color: var(--purple-bright); margin-bottom: 6px; }
+    .listing-item .listing-desc { font-size: 0.85em; color: var(--text-dim); line-height: 1.6; white-space: pre-line; }
+    .listing-item .listing-copy { margin-top: 8px; padding: 4px 12px; font-size: 0.75em; background: rgba(107, 63, 160, 0.3);
+      border: 1px solid rgba(155, 89, 182, 0.3); border-radius: 6px; color: var(--text); cursor: pointer; }
+
+    .footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15); margin-top: 30px; }
+
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.5em; }
+      .store-grid { grid-template-columns: 1fr 1fr; }
+      .platforms { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html">&larr; Back to Seed Bloom</a>
+      <span class="phase-tag">p=13 &middot; ISA-18.2</span>
+    </nav>
+
+    <header class="header">
+      <h1>Online Storefront</h1>
+      <span class="isa">ISA-18.2: Alarm Management</span>
+      <p>The customer-facing layer. Receives orders, sends confirmations, alerts you when something needs attention.</p>
+    </header>
+
+    <div class="platforms">
+      <div class="platform-card recommended">
+        <h3>Etsy</h3>
+        <div class="price">$0.20/listing</div>
+        <p>Already built for exactly this. Seed sellers thrive on Etsy. Built-in search, payment, and shipping calculator.</p>
+        <ul class="pros">
+          <li>Where seed buyers already shop</li>
+          <li>Zero marketing needed &mdash; Etsy search does the work</li>
+          <li>Built-in reviews and trust signals</li>
+          <li>Live in an afternoon</li>
+        </ul>
+      </div>
+      <div class="platform-card">
+        <h3>Square Online</h3>
+        <div class="price">Free tier</div>
+        <p>Clean storefront with POS integration. Great if she does farmers markets.</p>
+        <ul class="pros">
+          <li>Free to start</li>
+          <li>Integrates with Square POS</li>
+          <li>Good inventory sync</li>
+        </ul>
+      </div>
+      <div class="platform-card">
+        <h3>Shopify Starter</h3>
+        <div class="price">$5/month</div>
+        <p>More customizable, better for building a standalone brand. But more work than Etsy.</p>
+        <ul class="pros">
+          <li>Full brand control</li>
+          <li>Custom domain</li>
+          <li>Scale-ready</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Recommendation</h3>
+      <p>Start on Etsy. It's where seed buyers already shop. Zero marketing needed. Once you have 100+ sales and repeat customers, consider your own site. The store preview below shows what your listings could look like.</p>
+    </div>
+
+    <section class="store-preview">
+      <h2>Store Preview</h2>
+      <div class="store-header-bar">
+        <div>
+          <div class="store-brand">Charlotte's Seeds</div>
+          <div class="store-tagline">Heirloom & organic seed varieties, grown with love</div>
+        </div>
+        <div class="store-cart" id="cartBtn">Cart (<span id="cartCount">0</span>)</div>
+      </div>
+      <div class="store-body">
+        <div class="store-grid" id="storeGrid">
+          <p style="color: #8b7355; font-style: italic; text-align: center; grid-column: 1/-1;">Loading products from CSV...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="listing-gen">
+      <h2>Etsy Listing Generator</h2>
+      <p style="color: var(--text-dim); font-size: 0.9em; margin-bottom: 12px;">Auto-generate Etsy listing descriptions from your CSV data. Copy and paste into Etsy.</p>
+      <button class="btn btn-green" onclick="generateListings()">Generate All Listings</button>
+      <div class="listing-output" id="listingOutput"></div>
+    </section>
+
+    <footer class="footer">
+      <p>Effort: ~1 afternoon. Upload packet images, write descriptions (from the CSV &mdash; it's all already written), set prices. Done.</p>
+    </footer>
+  </div>
+
+  <script>
+    const CSV_KEY = 'charlotte_seed_csv';
+    const PLANT_ICONS = {
+      'tomato': '&#127813;', 'pepper': '&#127798;', 'pea': '&#129388;', 'squash': '&#129389;',
+      'sunflower': '&#127803;', 'lavender': '&#128156;', 'basil': '&#127807;', 'marigold': '&#127804;',
+      'kale': '&#129388;', 'zinnia': '&#127800;', 'carrot': '&#129365;', 'default': '&#127793;'
+    };
+    let cart = 0;
+
+    function getIcon(name) {
+      const lower = (name || '').toLowerCase();
+      for (const [key, icon] of Object.entries(PLANT_ICONS)) {
+        if (lower.includes(key)) return icon;
+      }
+      return PLANT_ICONS.default;
+    }
+
+    function getPrice(seed) {
+      const w = parseFloat(seed.weight_grams) || 1;
+      if (w > 3) return '3.99';
+      if (w > 1) return '3.49';
+      return '2.99';
+    }
+
+    function loadStore() {
+      const seeds = JSON.parse(localStorage.getItem(CSV_KEY) || '[]');
+      const grid = document.getElementById('storeGrid');
+
+      if (seeds.length === 0) {
+        const samples = [
+          { variety_name: 'Cherry Tomato', botanical_name: 'Solanum lycopersicum', days_to_maturity: '65', weight_grams: '0.5' },
+          { variety_name: 'Basil Genovese', botanical_name: 'Ocimum basilicum', days_to_maturity: '70', weight_grams: '0.3' },
+          { variety_name: 'Sunflower Mammoth', botanical_name: 'Helianthus annuus', days_to_maturity: '80', weight_grams: '3' },
+          { variety_name: 'Lavender English', botanical_name: 'Lavandula angustifolia', days_to_maturity: '90', weight_grams: '0.2' },
+        ];
+        renderGrid(samples, grid);
+      } else {
+        renderGrid(seeds, grid);
+      }
+    }
+
+    function renderGrid(seeds, grid) {
+      grid.innerHTML = seeds.map((s, i) => `
+        <div class="product-card">
+          <div class="product-img">${getIcon(s.variety_name)}</div>
+          <div class="product-info">
+            <h4>${s.variety_name || 'Seed Variety'}</h4>
+            <div class="product-bot">${s.botanical_name || ''}</div>
+            <div class="product-days">${s.days_to_maturity || '--'} days to maturity</div>
+            <div class="product-price">$${getPrice(s)}</div>
+            <button class="add-to-cart-btn" onclick="addToCart()">ADD TO CART</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addToCart() {
+      cart++;
+      document.getElementById('cartCount').textContent = cart;
+    }
+
+    function generateListings() {
+      const seeds = JSON.parse(localStorage.getItem(CSV_KEY) || '[]');
+      if (seeds.length === 0) { alert('No seed data. Go to p=2 Labels first!'); return; }
+      const output = document.getElementById('listingOutput');
+      output.innerHTML = seeds.map(s => {
+        const desc = `${s.variety_name} Seeds - ${s.botanical_name}
+
+${s.variety_name} seeds from Charlotte's Seeds. Grown and packed with care.
+
+Growing Information:
+- Days to Maturity: ${s.days_to_maturity || '--'} days
+- Planting Depth: ${s.depth_inches || '--'} inches
+- Spacing: ${s.spacing_inches || '--'} inches
+- Sun: ${s.sun || 'Full sun'}
+- Water: ${s.water || 'Regular'}
+- Packet Weight: ${s.weight_grams || '--'}g
+
+Lot: ${s.lot_number || 'N/A'}
+
+All seeds are fresh, tested for germination, and packed in resealable packets. Ships within 1-2 business days.`;
+
+        return `<div class="listing-item">
+          <h4>${s.variety_name || 'Unnamed'} - $${getPrice(s)}</h4>
+          <div class="listing-desc">${desc}</div>
+          <button class="listing-copy" onclick="copyListing(this)">Copy to Clipboard</button>
+        </div>`;
+      }).join('');
+    }
+
+    function copyListing(btn) {
+      const text = btn.previousElementSibling.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+      });
+    }
+
+    loadStore();
+  </script>
+</body>
+</html>

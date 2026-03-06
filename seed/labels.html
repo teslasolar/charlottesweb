@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p=2 Seed Packet Labels - Charlotte's Seed Bloom</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --purple-deep: #0d0a1a; --purple-dark: #1a1033; --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0; --purple-glow: #9b59b6; --purple-bright: #c084fc;
+      --gold: #d4a574; --gold-light: #f0d9b5; --green: #4ade80;
+      --text: #e8dff5; --text-dim: #9b8bb4;
+    }
+    body { background: var(--purple-deep); color: var(--text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .nav a { color: var(--purple-bright); text-decoration: none; font-size: 0.9em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .phase-tag { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.85em; letter-spacing: 2px; }
+
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { font-family: 'Cinzel', serif; font-size: 2em; font-weight: 900; color: var(--purple-bright); margin-bottom: 6px; }
+    .header .isa { font-size: 0.85em; color: var(--green); }
+    .header p { color: var(--text-dim); font-style: italic; margin-top: 8px; font-size: 0.95em; }
+
+    .info-box { background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(74, 222, 128, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .info-box h3 { font-family: 'Cinzel', serif; color: var(--green); margin-bottom: 8px; font-size: 1em; }
+    .info-box p, .info-box li { color: var(--text-dim); font-size: 0.9em; line-height: 1.6; }
+    .info-box ul { margin-left: 20px; margin-top: 6px; }
+
+    /* CSV Editor */
+    .csv-section { margin: 20px 0; }
+    .csv-section h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 12px; }
+
+    .toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .btn { padding: 8px 18px; font-family: 'Cinzel', serif; font-size: 0.85em; font-weight: 700; letter-spacing: 1px;
+      color: var(--text); background: rgba(45, 27, 105, 0.5); border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .btn:hover { background: rgba(107, 63, 160, 0.5); border-color: var(--purple-glow); }
+    .btn-green { border-color: rgba(74, 222, 128, 0.3); }
+    .btn-green:hover { border-color: var(--green); background: rgba(22, 101, 52, 0.3); }
+    .btn-gold { border-color: rgba(212, 165, 116, 0.3); }
+    .btn-gold:hover { border-color: var(--gold); background: rgba(212, 165, 116, 0.15); }
+
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(155, 89, 182, 0.2); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    th { font-family: 'Cinzel', serif; background: rgba(45, 27, 105, 0.5); color: var(--gold); padding: 10px 8px;
+      text-align: left; font-size: 0.8em; letter-spacing: 1px; white-space: nowrap; border-bottom: 1px solid rgba(155, 89, 182, 0.2); }
+    td { padding: 6px 8px; border-bottom: 1px solid rgba(107, 63, 160, 0.1); }
+    tr:hover { background: rgba(45, 27, 105, 0.2); }
+    td input { width: 100%; background: transparent; border: 1px solid transparent; color: var(--text); font-family: 'Cormorant Garamond', serif;
+      font-size: 1em; padding: 4px 6px; border-radius: 4px; }
+    td input:focus { border-color: var(--purple-glow); outline: none; background: rgba(45, 27, 105, 0.3); }
+    .row-num { color: var(--text-dim); font-size: 0.8em; text-align: center; min-width: 30px; }
+    .del-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1.1em; opacity: 0.5; }
+    .del-btn:hover { opacity: 1; }
+
+    .stats { display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap; }
+    .stat { padding: 8px 16px; background: rgba(45, 27, 105, 0.3); border-radius: 8px; border: 1px solid rgba(107, 63, 160, 0.15); }
+    .stat .label { font-size: 0.75em; color: var(--text-dim); }
+    .stat .value { font-family: 'Cinzel', serif; color: var(--purple-bright); }
+
+    /* Label Preview */
+    .preview-section { margin: 25px 0; }
+    .preview-section h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 12px; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+
+    .label-card { background: #f8f5f0; color: #2d1b0e; border-radius: 12px; padding: 20px; font-family: 'Cormorant Garamond', serif;
+      border: 2px solid #c9b896; position: relative; overflow: hidden; }
+    .label-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, var(--green), var(--gold), var(--green)); }
+    .label-brand { font-family: 'Cinzel', serif; font-size: 0.7em; color: #8b7355; letter-spacing: 3px; text-align: center; margin-bottom: 8px; }
+    .label-variety { font-family: 'Cinzel', serif; font-size: 1.3em; font-weight: 900; text-align: center; color: #2d1b0e; margin-bottom: 2px; }
+    .label-botanical { font-style: italic; font-size: 0.85em; color: #6b5b3e; text-align: center; margin-bottom: 12px; }
+    .label-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.8em; }
+    .label-field { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dotted #d4c9a8; }
+    .label-field .lf-label { color: #8b7355; }
+    .label-field .lf-value { font-weight: 600; color: #2d1b0e; }
+    .label-lot { font-size: 0.7em; color: #8b7355; text-align: center; margin-top: 10px; letter-spacing: 1px; }
+
+    .footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15); margin-top: 30px; }
+
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.5em; }
+      .preview-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html">&larr; Back to Seed Bloom</a>
+      <span class="phase-tag">p=2 &middot; ISA-95 L0</span>
+    </nav>
+
+    <header class="header">
+      <h1>Seed Packet Labels</h1>
+      <span class="isa">ISA-95 Level 0: The Physical Process</span>
+      <p>The thing that touches the product. The label on the packet. The physical interface between your business and your customer.</p>
+    </header>
+
+    <div class="info-box">
+      <h3>What You Need</h3>
+      <p>A label template system. Each of your 60+ seed varieties needs a packet label with:</p>
+      <ul>
+        <li>Variety name, botanical name, days to maturity</li>
+        <li>Planting depth, spacing, sun/water requirements</li>
+        <li>Lot number, weight, brand/logo</li>
+      </ul>
+      <p style="margin-top: 10px;">This CSV becomes the <strong style="color: var(--gold);">single source of truth</strong> for EVERYTHING downstream. Change the CSV, change all labels.</p>
+    </div>
+
+    <section class="csv-section">
+      <h2>Master Seed CSV</h2>
+      <div class="toolbar">
+        <button class="btn btn-green" onclick="addRow()">+ Add Variety</button>
+        <button class="btn" onclick="loadSample()">Load Sample Data</button>
+        <button class="btn btn-gold" onclick="exportCSV()">Export CSV</button>
+        <button class="btn" onclick="importCSV()">Import CSV</button>
+        <button class="btn btn-green" onclick="renderPreviews()">Preview Labels</button>
+        <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleImport(event)">
+      </div>
+
+      <div class="table-wrap">
+        <table id="seedTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Variety Name</th>
+              <th>Botanical Name</th>
+              <th>Days to Maturity</th>
+              <th>Depth (in)</th>
+              <th>Spacing (in)</th>
+              <th>Sun</th>
+              <th>Water</th>
+              <th>Lot Number</th>
+              <th>Weight (g)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="seedBody"></tbody>
+        </table>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="label">Varieties</span> <span class="value" id="varietyCount">0</span></div>
+        <div class="stat"><span class="label">CSV Status</span> <span class="value" id="csvStatus">Empty</span></div>
+      </div>
+    </section>
+
+    <section class="preview-section">
+      <h2>Label Previews</h2>
+      <div class="preview-grid" id="previewGrid">
+        <p style="color: var(--text-dim); font-style: italic; grid-column: 1/-1; text-align: center;">Add seed data above and click "Preview Labels" to see your packet designs.</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Effort: ~4 hours to build the CSV + template. Then every new variety = 1 new row.</p>
+      <p style="margin-top: 6px;">the seed IS the fold &mdash; everything grows from the first prime</p>
+    </footer>
+  </div>
+
+  <script>
+    const COLUMNS = ['variety_name','botanical_name','days_to_maturity','depth_inches','spacing_inches','sun','water','lot_number','weight_grams'];
+    const STORAGE_KEY = 'charlotte_seed_csv';
+
+    let seedData = [];
+
+    function loadFromStorage() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { seedData = JSON.parse(saved); } catch(e) { seedData = []; }
+      }
+      renderTable();
+    }
+
+    function saveToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(seedData));
+      document.getElementById('varietyCount').textContent = seedData.length;
+      document.getElementById('csvStatus').textContent = seedData.length > 0 ? 'Saved' : 'Empty';
+    }
+
+    function makeRow() {
+      return { variety_name: '', botanical_name: '', days_to_maturity: '', depth_inches: '', spacing_inches: '',
+        sun: '', water: '', lot_number: '', weight_grams: '' };
+    }
+
+    function addRow() {
+      seedData.push(makeRow());
+      renderTable();
+      saveToStorage();
+    }
+
+    function deleteRow(idx) {
+      seedData.splice(idx, 1);
+      renderTable();
+      saveToStorage();
+    }
+
+    function updateField(idx, field, value) {
+      seedData[idx][field] = value;
+      saveToStorage();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('seedBody');
+      tbody.innerHTML = '';
+      seedData.forEach((row, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="row-num">${i + 1}</td>` +
+          COLUMNS.map(col =>
+            `<td><input value="${(row[col] || '').replace(/"/g, '&quot;')}" onchange="updateField(${i},'${col}',this.value)" placeholder="..."></td>`
+          ).join('') +
+          `<td><button class="del-btn" onclick="deleteRow(${i})" title="Remove">x</button></td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('varietyCount').textContent = seedData.length;
+      document.getElementById('csvStatus').textContent = seedData.length > 0 ? 'Saved' : 'Empty';
+    }
+
+    function exportCSV() {
+      if (seedData.length === 0) { alert('No data to export.'); return; }
+      let csv = COLUMNS.join(',') + '\n';
+      seedData.forEach(row => {
+        csv += COLUMNS.map(c => {
+          const v = (row[c] || '').toString();
+          return v.includes(',') || v.includes('"') ? '"' + v.replace(/"/g, '""') + '"' : v;
+        }).join(',') + '\n';
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'charlotte_seeds.csv';
+      a.click();
+    }
+
+    function importCSV() {
+      document.getElementById('csvFileInput').click();
+    }
+
+    function handleImport(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const lines = ev.target.result.split('\n').filter(l => l.trim());
+        if (lines.length < 2) return;
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+        seedData = [];
+        for (let i = 1; i < lines.length; i++) {
+          const vals = lines[i].split(',');
+          const row = makeRow();
+          headers.forEach((h, j) => {
+            const mapped = COLUMNS.find(c => c === h || h.includes(c.split('_')[0]));
+            if (mapped) row[mapped] = (vals[j] || '').trim().replace(/^"|"$/g, '');
+          });
+          if (row.variety_name) seedData.push(row);
+        }
+        renderTable();
+        saveToStorage();
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    function renderPreviews() {
+      const grid = document.getElementById('previewGrid');
+      if (seedData.length === 0) {
+        grid.innerHTML = '<p style="color: var(--text-dim); font-style: italic; grid-column: 1/-1; text-align: center;">No seed data. Add varieties first.</p>';
+        return;
+      }
+      grid.innerHTML = seedData.map(row => `
+        <div class="label-card">
+          <div class="label-brand">CHARLOTTE'S SEEDS</div>
+          <div class="label-variety">${row.variety_name || 'Unnamed'}</div>
+          <div class="label-botanical">${row.botanical_name || 'Species unknown'}</div>
+          <div class="label-grid">
+            <div class="label-field"><span class="lf-label">Maturity</span><span class="lf-value">${row.days_to_maturity || '--'} days</span></div>
+            <div class="label-field"><span class="lf-label">Depth</span><span class="lf-value">${row.depth_inches || '--'}"</span></div>
+            <div class="label-field"><span class="lf-label">Spacing</span><span class="lf-value">${row.spacing_inches || '--'}"</span></div>
+            <div class="label-field"><span class="lf-label">Sun</span><span class="lf-value">${row.sun || '--'}</span></div>
+            <div class="label-field"><span class="lf-label">Water</span><span class="lf-value">${row.water || '--'}</span></div>
+            <div class="label-field"><span class="lf-label">Weight</span><span class="lf-value">${row.weight_grams || '--'}g</span></div>
+          </div>
+          <div class="label-lot">${row.lot_number || 'LOT-PENDING'}</div>
+        </div>
+      `).join('');
+    }
+
+    const SAMPLE_SEEDS = [
+      { variety_name: 'Cherry Tomato', botanical_name: 'Solanum lycopersicum', days_to_maturity: '65', depth_inches: '0.25', spacing_inches: '24', sun: 'Full', water: 'Regular', lot_number: '2026-03-TOMCHERRY-001', weight_grams: '0.5' },
+      { variety_name: 'Sugar Snap Pea', botanical_name: 'Pisum sativum', days_to_maturity: '60', depth_inches: '1', spacing_inches: '3', sun: 'Full', water: 'Regular', lot_number: '2026-03-PEASNAP-001', weight_grams: '5' },
+      { variety_name: 'Basil Genovese', botanical_name: 'Ocimum basilicum', days_to_maturity: '70', depth_inches: '0.25', spacing_inches: '12', sun: 'Full', water: 'Moderate', lot_number: '2026-03-BASGENO-001', weight_grams: '0.3' },
+      { variety_name: 'Sunflower Mammoth', botanical_name: 'Helianthus annuus', days_to_maturity: '80', depth_inches: '1', spacing_inches: '24', sun: 'Full', water: 'Low', lot_number: '2026-03-SUNMAMM-001', weight_grams: '3' },
+      { variety_name: 'Lavender English', botanical_name: 'Lavandula angustifolia', days_to_maturity: '90', depth_inches: '0.125', spacing_inches: '18', sun: 'Full', water: 'Low', lot_number: '2026-03-LAVENG-001', weight_grams: '0.2' },
+      { variety_name: 'Jalape\u00f1o', botanical_name: 'Capsicum annuum', days_to_maturity: '75', depth_inches: '0.25', spacing_inches: '18', sun: 'Full', water: 'Moderate', lot_number: '2026-03-PEPJALA-001', weight_grams: '0.4' },
+      { variety_name: 'Butternut Squash', botanical_name: 'Cucurbita moschata', days_to_maturity: '100', depth_inches: '1', spacing_inches: '48', sun: 'Full', water: 'Regular', lot_number: '2026-03-SQUBUT-001', weight_grams: '4' },
+      { variety_name: 'Marigold French', botanical_name: 'Tagetes patula', days_to_maturity: '50', depth_inches: '0.25', spacing_inches: '8', sun: 'Full', water: 'Low', lot_number: '2026-03-MARFRE-001', weight_grams: '0.3' },
+      { variety_name: 'Kale Lacinato', botanical_name: 'Brassica oleracea', days_to_maturity: '55', depth_inches: '0.5', spacing_inches: '18', sun: 'Full/Partial', water: 'Regular', lot_number: '2026-03-KALLAC-001', weight_grams: '0.5' },
+      { variety_name: 'Zinnia Giant', botanical_name: 'Zinnia elegans', days_to_maturity: '60', depth_inches: '0.25', spacing_inches: '12', sun: 'Full', water: 'Moderate', lot_number: '2026-03-ZINGNT-001', weight_grams: '0.4' },
+    ];
+
+    function loadSample() {
+      if (seedData.length > 0 && !confirm('This will replace existing data. Continue?')) return;
+      seedData = SAMPLE_SEEDS.map(s => ({...s}));
+      renderTable();
+      saveToStorage();
+      renderPreviews();
+    }
+
+    // Init
+    loadFromStorage();
+  </script>
+</body>
+</html>
