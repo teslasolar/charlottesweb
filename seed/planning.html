@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p=7 Seasonal Planning - Charlotte's Seed Bloom</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --purple-deep: #0d0a1a; --purple-dark: #1a1033; --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0; --purple-glow: #9b59b6; --purple-bright: #c084fc;
+      --gold: #d4a574; --gold-light: #f0d9b5; --green: #4ade80;
+      --text: #e8dff5; --text-dim: #9b8bb4;
+    }
+    body { background: var(--purple-deep); color: var(--text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .nav a { color: var(--purple-bright); text-decoration: none; font-size: 0.9em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .phase-tag { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.85em; letter-spacing: 2px; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { font-family: 'Cinzel', serif; font-size: 2em; font-weight: 900; color: var(--purple-bright); margin-bottom: 6px; }
+    .header .isa { font-size: 0.85em; color: var(--green); }
+    .header p { color: var(--text-dim); font-style: italic; margin-top: 8px; font-size: 0.95em; }
+
+    .info-box { background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(74, 222, 128, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .info-box h3 { font-family: 'Cinzel', serif; color: var(--green); margin-bottom: 8px; font-size: 1em; }
+    .info-box p { color: var(--text-dim); font-size: 0.9em; line-height: 1.6; }
+
+    .btn { padding: 8px 18px; font-family: 'Cinzel', serif; font-size: 0.85em; font-weight: 700; letter-spacing: 1px;
+      color: var(--text); background: rgba(45, 27, 105, 0.5); border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .btn:hover { background: rgba(107, 63, 160, 0.5); border-color: var(--purple-glow); }
+    .btn-green { border-color: rgba(74, 222, 128, 0.3); }
+    .btn-green:hover { border-color: var(--green); background: rgba(22, 101, 52, 0.3); }
+
+    /* Zone Selector */
+    .zone-bar { display: flex; align-items: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+    .zone-bar label { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9em; }
+    .zone-bar select { padding: 8px 16px; background: rgba(26, 16, 51, 0.8); border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: 8px; color: var(--text); font-family: 'Cormorant Garamond', serif; font-size: 0.95em; }
+    .zone-bar select:focus { border-color: var(--purple-glow); outline: none; }
+
+    /* Calendar Matrix */
+    .calendar-section { margin: 20px 0; }
+    .calendar-section h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 12px; }
+    .toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+
+    .matrix-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(155, 89, 182, 0.2); }
+    .matrix { width: 100%; border-collapse: collapse; font-size: 0.8em; min-width: 900px; }
+    .matrix th { font-family: 'Cinzel', serif; background: rgba(45, 27, 105, 0.5); color: var(--gold); padding: 10px 6px;
+      text-align: center; font-size: 0.85em; letter-spacing: 1px; border-bottom: 1px solid rgba(155, 89, 182, 0.2); }
+    .matrix th:first-child { text-align: left; padding-left: 12px; min-width: 160px; }
+    .matrix td { padding: 4px; border-bottom: 1px solid rgba(107, 63, 160, 0.08); text-align: center; }
+    .matrix td:first-child { text-align: left; padding-left: 12px; font-weight: 600; color: var(--text); }
+    .matrix tr:hover { background: rgba(45, 27, 105, 0.15); }
+
+    .cell { width: 100%; height: 32px; border-radius: 4px; cursor: pointer; border: 1px solid transparent;
+      display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 700;
+      transition: all 0.15s; user-select: none; }
+    .cell:hover { border-color: rgba(255,255,255,0.3); }
+    .cell[data-state="plant"] { background: rgba(74, 222, 128, 0.35); color: var(--green); }
+    .cell[data-state="harvest"] { background: rgba(212, 165, 116, 0.35); color: var(--gold); }
+    .cell[data-state="available"] { background: rgba(192, 132, 252, 0.3); color: var(--purple-bright); }
+    .cell[data-state=""] { background: transparent; }
+
+    .legend { display: flex; gap: 20px; margin: 12px 0; font-size: 0.85em; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-swatch { width: 20px; height: 14px; border-radius: 3px; }
+    .legend-label { color: var(--text-dim); }
+
+    /* Forecast */
+    .forecast-section { margin: 25px 0; }
+    .forecast-section h2 { font-family: 'Cinzel', serif; font-size: 1.2em; color: var(--purple-bright); margin-bottom: 12px; }
+    .forecast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+    .forecast-card { padding: 16px; background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(155, 89, 182, 0.15);
+      border-radius: 10px; }
+    .forecast-card h4 { font-family: 'Cinzel', serif; color: var(--purple-bright); font-size: 0.95em; margin-bottom: 6px; }
+    .forecast-card .fc-row { display: flex; justify-content: space-between; font-size: 0.85em; margin: 3px 0; }
+    .forecast-card .fc-label { color: var(--text-dim); }
+    .forecast-card .fc-value { color: var(--gold); font-weight: 700; }
+
+    .footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15); margin-top: 30px; }
+
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.5em; }
+      .forecast-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html">&larr; Back to Seed Bloom</a>
+      <span class="phase-tag">p=7 &middot; ISA-88</span>
+    </nav>
+
+    <header class="header">
+      <h1>Seasonal Planning</h1>
+      <span class="isa">ISA-88: Batch Control</span>
+      <p>Which varieties to stock by season, grow zone compatibility, planting calendars, order forecasting. The knowledge you can't compute from data alone &mdash; you have to know your zones.</p>
+    </header>
+
+    <div class="info-box">
+      <h3>Planting Calendar</h3>
+      <p>A seasonal matrix becomes a <strong style="color:var(--gold)">PLANTING CALENDAR</strong> you can give customers &mdash; value-add that differentiates you from Amazon seed sellers. Click cells to cycle through: Plant / Harvest / Seed Available / Empty.</p>
+    </div>
+
+    <div class="zone-bar">
+      <label>USDA Grow Zone:</label>
+      <select id="zoneSelect" onchange="updateZone()">
+        <option value="3">Zone 3</option><option value="4">Zone 4</option><option value="5">Zone 5</option>
+        <option value="6">Zone 6</option><option value="7" selected>Zone 7</option><option value="8">Zone 8</option>
+        <option value="9">Zone 9</option><option value="10">Zone 10</option><option value="11">Zone 11</option>
+      </select>
+      <button class="btn btn-green" onclick="loadFromCSV()">Load Varieties from CSV</button>
+      <button class="btn" onclick="addPlanRow()">+ Add Row</button>
+      <button class="btn" onclick="autoFill()">Auto-Fill Estimates</button>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(74,222,128,0.35)"></div><span class="legend-label">Plant</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(212,165,116,0.35)"></div><span class="legend-label">Harvest</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(192,132,252,0.3)"></div><span class="legend-label">Seed Available</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:transparent; border:1px solid rgba(155,89,182,0.2)"></div><span class="legend-label">Empty</span></div>
+    </div>
+
+    <section class="calendar-section">
+      <div class="matrix-wrap">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th>Variety</th>
+              <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th>
+              <th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="forecast-section">
+      <h2>Order Forecasting</h2>
+      <p style="color: var(--text-dim); font-size: 0.9em; margin-bottom: 15px;">After one season of sales data (from p=3 inventory), simple formula: next year's stock = this year's sales x 1.2 (20% growth buffer).</p>
+      <div class="forecast-grid" id="forecastGrid">
+        <p style="color: var(--text-dim); font-style: italic; text-align: center; grid-column: 1/-1;">Forecasting data will populate from order history in p=3 Inventory.</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Effort: ~3 hours. She already knows this intuitively &mdash; just put it in the sheet.</p>
+    </footer>
+  </div>
+
+  <script>
+    const CSV_KEY = 'charlotte_seed_csv';
+    const PLAN_KEY = 'charlotte_planning';
+    const ORD_KEY = 'charlotte_orders';
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const STATES = ['', 'plant', 'harvest', 'available'];
+
+    let planData = [];
+
+    function load() {
+      try { planData = JSON.parse(localStorage.getItem(PLAN_KEY) || '[]'); } catch(e) { planData = []; }
+      renderMatrix();
+      renderForecast();
+    }
+
+    function save() {
+      localStorage.setItem(PLAN_KEY, JSON.stringify(planData));
+    }
+
+    function loadFromCSV() {
+      const seeds = JSON.parse(localStorage.getItem(CSV_KEY) || '[]');
+      if (seeds.length === 0) { alert('No seed data. Go to p=2 Labels first!'); return; }
+      const existing = new Set(planData.map(p => p.name));
+      let added = 0;
+      seeds.forEach(s => {
+        if (s.variety_name && !existing.has(s.variety_name)) {
+          planData.push({ name: s.variety_name, months: Array(12).fill('') });
+          added++;
+        }
+      });
+      if (added > 0) { save(); renderMatrix(); alert(`Added ${added} varieties.`); }
+      else { alert('All CSV varieties already in planner.'); }
+    }
+
+    function addPlanRow() {
+      planData.push({ name: 'New Variety', months: Array(12).fill('') });
+      save(); renderMatrix();
+    }
+
+    function cycleState(rowIdx, monthIdx) {
+      const current = planData[rowIdx].months[monthIdx];
+      const nextIdx = (STATES.indexOf(current) + 1) % STATES.length;
+      planData[rowIdx].months[monthIdx] = STATES[nextIdx];
+      save(); renderMatrix();
+    }
+
+    function stateLabel(s) {
+      if (s === 'plant') return 'P';
+      if (s === 'harvest') return 'H';
+      if (s === 'available') return 'S';
+      return '';
+    }
+
+    function renderMatrix() {
+      const tbody = document.getElementById('matrixBody');
+      tbody.innerHTML = planData.map((row, ri) =>
+        `<tr><td>${row.name}</td>` +
+        row.months.map((m, mi) =>
+          `<td><div class="cell" data-state="${m}" onclick="cycleState(${ri},${mi})">${stateLabel(m)}</div></td>`
+        ).join('') + '</tr>'
+      ).join('');
+    }
+
+    function autoFill() {
+      const zone = parseInt(document.getElementById('zoneSelect').value);
+      const seeds = JSON.parse(localStorage.getItem(CSV_KEY) || '[]');
+      planData.forEach(row => {
+        const seed = seeds.find(s => s.variety_name === row.name);
+        const days = seed ? parseInt(seed.days_to_maturity) || 70 : 70;
+        // Estimate planting window based on zone
+        const lastFrostMonth = Math.max(1, 6 - Math.floor(zone / 2)); // rough approximation
+        const plantStart = lastFrostMonth;
+        const harvestStart = plantStart + Math.floor(days / 30);
+        row.months = row.months.map((_, mi) => {
+          if (mi >= plantStart && mi < plantStart + 2) return 'plant';
+          if (mi >= harvestStart && mi < harvestStart + 2 && mi < 12) return 'harvest';
+          if (mi >= 0 && mi < plantStart) return 'available';
+          return '';
+        });
+      });
+      save(); renderMatrix();
+    }
+
+    function renderForecast() {
+      const orders = JSON.parse(localStorage.getItem(ORD_KEY) || '[]');
+      const grid = document.getElementById('forecastGrid');
+      if (orders.length === 0) {
+        grid.innerHTML = '<p style="color: var(--text-dim); font-style: italic; text-align: center; grid-column: 1/-1;">No order data yet. Record orders in p=3 Inventory to see forecasting.</p>';
+        return;
+      }
+      // Aggregate by variety
+      const byVariety = {};
+      orders.forEach(o => {
+        if (!byVariety[o.variety]) byVariety[o.variety] = { total: 0, count: 0 };
+        byVariety[o.variety].total += (o.qty || 1);
+        byVariety[o.variety].count++;
+      });
+      grid.innerHTML = Object.entries(byVariety).map(([name, data]) =>
+        `<div class="forecast-card">
+          <h4>${name}</h4>
+          <div class="fc-row"><span class="fc-label">Orders This Season</span><span class="fc-value">${data.count}</span></div>
+          <div class="fc-row"><span class="fc-label">Units Sold</span><span class="fc-value">${data.total}</span></div>
+          <div class="fc-row"><span class="fc-label">Next Year Stock (x1.2)</span><span class="fc-value">${Math.ceil(data.total * 1.2)}</span></div>
+        </div>`
+      ).join('');
+    }
+
+    function updateZone() { /* zone stored for display, auto-fill uses it */ }
+
+    load();
+  </script>
+</body>
+</html>
