@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p=3 Seed Inventory - Charlotte's Seed Bloom</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --purple-deep: #0d0a1a; --purple-dark: #1a1033; --purple-mid: #2d1b69;
+      --purple-light: #6b3fa0; --purple-glow: #9b59b6; --purple-bright: #c084fc;
+      --gold: #d4a574; --gold-light: #f0d9b5; --green: #4ade80; --red: #ef4444; --yellow: #facc15;
+      --text: #e8dff5; --text-dim: #9b8bb4;
+    }
+    body { background: var(--purple-deep); color: var(--text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .nav a { color: var(--purple-bright); text-decoration: none; font-size: 0.9em; }
+    .nav a:hover { text-decoration: underline; }
+    .nav .phase-tag { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.85em; letter-spacing: 2px; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { font-family: 'Cinzel', serif; font-size: 2em; font-weight: 900; color: var(--purple-bright); margin-bottom: 6px; }
+    .header .isa { font-size: 0.85em; color: var(--green); }
+    .header p { color: var(--text-dim); font-style: italic; margin-top: 8px; font-size: 0.95em; }
+
+    .info-box { background: rgba(26, 16, 51, 0.7); border: 1px solid rgba(74, 222, 128, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .info-box h3 { font-family: 'Cinzel', serif; color: var(--green); margin-bottom: 8px; font-size: 1em; }
+    .info-box p { color: var(--text-dim); font-size: 0.9em; line-height: 1.6; }
+
+    /* Dashboard Cards */
+    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 20px 0; }
+    .dash-card { padding: 16px; background: linear-gradient(145deg, rgba(26, 16, 51, 0.8), rgba(13, 10, 26, 0.9));
+      border: 1px solid rgba(155, 89, 182, 0.2); border-radius: 12px; text-align: center; }
+    .dash-card .dash-value { font-family: 'Cinzel', serif; font-size: 2em; font-weight: 900; color: var(--purple-bright); }
+    .dash-card .dash-label { font-size: 0.8em; color: var(--text-dim); margin-top: 4px; }
+    .dash-card.alert { border-color: rgba(239, 68, 68, 0.4); }
+    .dash-card.alert .dash-value { color: var(--red); }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; margin: 20px 0 0; }
+    .tab { padding: 10px 20px; font-family: 'Cinzel', serif; font-size: 0.85em; letter-spacing: 1px; color: var(--text-dim);
+      background: rgba(26, 16, 51, 0.5); border: 1px solid rgba(107, 63, 160, 0.15); border-bottom: none;
+      border-radius: 8px 8px 0 0; cursor: pointer; transition: all 0.2s; }
+    .tab.active { color: var(--purple-bright); background: rgba(45, 27, 105, 0.5); border-color: rgba(155, 89, 182, 0.3); }
+    .tab-content { display: none; background: rgba(26, 16, 51, 0.5); border: 1px solid rgba(155, 89, 182, 0.2);
+      border-radius: 0 12px 12px 12px; padding: 20px; }
+    .tab-content.active { display: block; }
+
+    .toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .btn { padding: 8px 18px; font-family: 'Cinzel', serif; font-size: 0.85em; font-weight: 700; letter-spacing: 1px;
+      color: var(--text); background: rgba(45, 27, 105, 0.5); border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .btn:hover { background: rgba(107, 63, 160, 0.5); border-color: var(--purple-glow); }
+    .btn-green { border-color: rgba(74, 222, 128, 0.3); }
+    .btn-green:hover { border-color: var(--green); background: rgba(22, 101, 52, 0.3); }
+
+    .table-wrap { overflow-x: auto; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    th { font-family: 'Cinzel', serif; background: rgba(45, 27, 105, 0.5); color: var(--gold); padding: 10px 8px;
+      text-align: left; font-size: 0.8em; letter-spacing: 1px; white-space: nowrap; border-bottom: 1px solid rgba(155, 89, 182, 0.2); }
+    td { padding: 6px 8px; border-bottom: 1px solid rgba(107, 63, 160, 0.1); }
+    tr:hover { background: rgba(45, 27, 105, 0.2); }
+    td input, td select { width: 100%; background: transparent; border: 1px solid transparent; color: var(--text);
+      font-family: 'Cormorant Garamond', serif; font-size: 1em; padding: 4px 6px; border-radius: 4px; }
+    td input:focus, td select:focus { border-color: var(--purple-glow); outline: none; background: rgba(45, 27, 105, 0.3); }
+    td select { background: rgba(26, 16, 51, 0.8); }
+    .row-num { color: var(--text-dim); font-size: 0.8em; text-align: center; }
+    .low-stock { color: var(--red); font-weight: bold; }
+    .ok-stock { color: var(--green); }
+    .warn-stock { color: var(--yellow); }
+
+    /* Orders */
+    .order-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px; align-items: end; }
+    .form-group label { display: block; font-size: 0.8em; color: var(--text-dim); margin-bottom: 4px; }
+    .form-group input, .form-group select { width: 100%; padding: 8px 12px; background: rgba(26, 16, 51, 0.8);
+      border: 1px solid rgba(155, 89, 182, 0.3); border-radius: 8px; color: var(--text);
+      font-family: 'Cormorant Garamond', serif; font-size: 0.95em; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--purple-glow); outline: none; }
+
+    .footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.8em;
+      border-top: 1px solid rgba(107, 63, 160, 0.15); margin-top: 30px; }
+
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.5em; }
+      .order-form { grid-template-columns: 1fr; }
+      .dashboard { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html">&larr; Back to Seed Bloom</a>
+      <span class="phase-tag">p=3 &middot; ISA-95 L1</span>
+    </nav>
+
+    <header class="header">
+      <h1>Seed Inventory</h1>
+      <span class="isa">ISA-95 Level 1: Sensing & Data Acquisition</span>
+      <p>Know what you have. How many packets of each variety. When they were packed. When they expire. What's running low.</p>
+    </header>
+
+    <div class="info-box">
+      <h3>Naming Convention</h3>
+      <p>Every lot gets a code: <strong style="color:var(--gold)">YYYY-MM-VARIETY-LOT</strong>. Example: 2026-03-TOMCHERRY-001. This lot number goes on the label, in the inventory sheet, on the order form. One code, everywhere. Traceability from packet to customer.</p>
+    </div>
+
+    <div class="dashboard">
+      <div class="dash-card"><div class="dash-value" id="totalVarieties">0</div><div class="dash-label">Total Varieties</div></div>
+      <div class="dash-card"><div class="dash-value" id="totalStock">0</div><div class="dash-label">Total Packets</div></div>
+      <div class="dash-card"><div class="dash-value" id="totalOrders">0</div><div class="dash-label">Orders</div></div>
+      <div class="dash-card alert"><div class="dash-value" id="lowStockCount">0</div><div class="dash-label">Low Stock Alerts</div></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('inventory')">Inventory</div>
+      <div class="tab" onclick="switchTab('orders')">Orders</div>
+      <div class="tab" onclick="switchTab('alerts')">Reorder Alerts</div>
+    </div>
+
+    <!-- Inventory Tab -->
+    <div class="tab-content active" id="tab-inventory">
+      <div class="toolbar">
+        <button class="btn btn-green" onclick="syncFromLabels()">Sync from Labels (p=2)</button>
+        <button class="btn" onclick="addInventoryRow()">+ Add Item</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Variety</th><th>Lot Number</th><th>Qty On Hand</th><th>Qty Reserved</th><th>Available</th><th>Last Packed</th><th>Expiry</th><th>Reorder At</th><th>Status</th></tr>
+          </thead>
+          <tbody id="invBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div class="tab-content" id="tab-orders">
+      <h3 style="font-family: 'Cinzel', serif; color: var(--purple-bright); margin-bottom: 15px;">Record New Order</h3>
+      <div class="order-form">
+        <div class="form-group">
+          <label>Customer Name</label>
+          <input type="text" id="orderCustomer" placeholder="Customer name">
+        </div>
+        <div class="form-group">
+          <label>Variety</label>
+          <select id="orderVariety"></select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" id="orderQty" value="1" min="1">
+        </div>
+        <button class="btn btn-green" onclick="addOrder()" style="margin-bottom: 2px;">Add Order</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Customer</th><th>Variety</th><th>Qty</th><th>Status</th></tr></thead>
+          <tbody id="orderBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Alerts Tab -->
+    <div class="tab-content" id="tab-alerts">
+      <div id="alertsList"></div>
+    </div>
+
+    <footer class="footer">
+      <p>Effort: ~2 hours. She probably already has half of this in her head. Just get it into rows.</p>
+    </footer>
+  </div>
+
+  <script>
+    const INV_KEY = 'charlotte_inventory';
+    const ORD_KEY = 'charlotte_orders';
+    const CSV_KEY = 'charlotte_seed_csv';
+
+    let inventory = [];
+    let orders = [];
+
+    function load() {
+      try { inventory = JSON.parse(localStorage.getItem(INV_KEY) || '[]'); } catch(e) { inventory = []; }
+      try { orders = JSON.parse(localStorage.getItem(ORD_KEY) || '[]'); } catch(e) { orders = []; }
+    }
+
+    function save() {
+      localStorage.setItem(INV_KEY, JSON.stringify(inventory));
+      localStorage.setItem(ORD_KEY, JSON.stringify(orders));
+      updateDashboard();
+    }
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('tab-' + name).classList.add('active');
+      if (name === 'alerts') renderAlerts();
+      if (name === 'orders') populateOrderVarieties();
+    }
+
+    function syncFromLabels() {
+      const seeds = JSON.parse(localStorage.getItem(CSV_KEY) || '[]');
+      if (seeds.length === 0) { alert('No seed data in p=2 Labels. Go build your CSV first!'); return; }
+      const existingNames = new Set(inventory.map(i => i.variety_name));
+      let added = 0;
+      seeds.forEach(s => {
+        if (!existingNames.has(s.variety_name)) {
+          inventory.push({
+            variety_name: s.variety_name, lot_number: s.lot_number || '',
+            qty_on_hand: 0, qty_reserved: 0, last_packed: '', expiry: '', reorder_threshold: 5
+          });
+          added++;
+        }
+      });
+      if (added > 0) { save(); renderInventory(); alert(`Synced ${added} new varieties from Labels.`); }
+      else { alert('All label varieties already in inventory.'); }
+    }
+
+    function addInventoryRow() {
+      inventory.push({ variety_name: '', lot_number: '', qty_on_hand: 0, qty_reserved: 0,
+        last_packed: '', expiry: '', reorder_threshold: 5 });
+      save(); renderInventory();
+    }
+
+    function updateInv(idx, field, val) {
+      if (['qty_on_hand','qty_reserved','reorder_threshold'].includes(field)) val = parseInt(val) || 0;
+      inventory[idx][field] = val;
+      save(); renderInventory();
+    }
+
+    function renderInventory() {
+      const tbody = document.getElementById('invBody');
+      tbody.innerHTML = inventory.map((item, i) => {
+        const avail = (item.qty_on_hand || 0) - (item.qty_reserved || 0);
+        const isLow = avail <= (item.reorder_threshold || 5);
+        const statusClass = avail <= 0 ? 'low-stock' : isLow ? 'warn-stock' : 'ok-stock';
+        const statusText = avail <= 0 ? 'OUT' : isLow ? 'LOW' : 'OK';
+        return `<tr>
+          <td class="row-num">${i+1}</td>
+          <td><input value="${item.variety_name||''}" onchange="updateInv(${i},'variety_name',this.value)"></td>
+          <td><input value="${item.lot_number||''}" onchange="updateInv(${i},'lot_number',this.value)"></td>
+          <td><input type="number" value="${item.qty_on_hand||0}" onchange="updateInv(${i},'qty_on_hand',this.value)" style="width:60px"></td>
+          <td><input type="number" value="${item.qty_reserved||0}" onchange="updateInv(${i},'qty_reserved',this.value)" style="width:60px"></td>
+          <td class="${statusClass}" style="font-weight:bold">${avail}</td>
+          <td><input type="date" value="${item.last_packed||''}" onchange="updateInv(${i},'last_packed',this.value)"></td>
+          <td><input type="date" value="${item.expiry||''}" onchange="updateInv(${i},'expiry',this.value)"></td>
+          <td><input type="number" value="${item.reorder_threshold||5}" onchange="updateInv(${i},'reorder_threshold',this.value)" style="width:50px"></td>
+          <td class="${statusClass}">${statusText}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function populateOrderVarieties() {
+      const sel = document.getElementById('orderVariety');
+      sel.innerHTML = '<option value="">Select variety...</option>' +
+        inventory.filter(i => i.variety_name).map(i => `<option value="${i.variety_name}">${i.variety_name}</option>`).join('');
+    }
+
+    function addOrder() {
+      const customer = document.getElementById('orderCustomer').value.trim();
+      const variety = document.getElementById('orderVariety').value;
+      const qty = parseInt(document.getElementById('orderQty').value) || 1;
+      if (!customer || !variety) { alert('Fill in customer and variety.'); return; }
+      orders.push({ date: new Date().toISOString().split('T')[0], customer, variety, qty, status: 'pending' });
+      // Decrement inventory
+      const inv = inventory.find(i => i.variety_name === variety);
+      if (inv) { inv.qty_on_hand = Math.max(0, (inv.qty_on_hand || 0) - qty); }
+      save(); renderOrders(); renderInventory();
+      document.getElementById('orderCustomer').value = '';
+      document.getElementById('orderQty').value = '1';
+    }
+
+    function renderOrders() {
+      document.getElementById('orderBody').innerHTML = orders.map((o, i) =>
+        `<tr><td class="row-num">${i+1}</td><td>${o.date}</td><td>${o.customer}</td><td>${o.variety}</td><td>${o.qty}</td><td>${o.status}</td></tr>`
+      ).join('');
+    }
+
+    function renderAlerts() {
+      const alerts = inventory.filter(i => {
+        const avail = (i.qty_on_hand || 0) - (i.qty_reserved || 0);
+        return avail <= (i.reorder_threshold || 5);
+      });
+      const el = document.getElementById('alertsList');
+      if (alerts.length === 0) {
+        el.innerHTML = '<p style="color: var(--green); text-align: center; padding: 20px;">All stock levels are healthy.</p>';
+        return;
+      }
+      el.innerHTML = alerts.map(a => {
+        const avail = (a.qty_on_hand||0) - (a.qty_reserved||0);
+        return `<div style="padding: 12px 16px; margin-bottom: 8px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px;">
+          <strong style="color:var(--red);">${avail <= 0 ? 'OUT OF STOCK' : 'LOW STOCK'}</strong> &mdash;
+          <span style="color:var(--text)">${a.variety_name}</span>
+          <span style="color:var(--text-dim);margin-left:10px;">Available: ${avail} / Threshold: ${a.reorder_threshold||5}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function updateDashboard() {
+      document.getElementById('totalVarieties').textContent = inventory.length;
+      document.getElementById('totalStock').textContent = inventory.reduce((s,i) => s + (i.qty_on_hand||0), 0);
+      document.getElementById('totalOrders').textContent = orders.length;
+      const lowCount = inventory.filter(i => ((i.qty_on_hand||0) - (i.qty_reserved||0)) <= (i.reorder_threshold||5)).length;
+      document.getElementById('lowStockCount').textContent = lowCount;
+    }
+
+    // Init
+    load();
+    renderInventory();
+    renderOrders();
+    updateDashboard();
+  </script>
+</body>
+</html>
